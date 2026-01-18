@@ -260,7 +260,6 @@ h1, h2, h3, h4, h5, h6 {
   font-size: 1rem;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   width: 100%;
-  width: 100%;
 }
 
 .input-modern:focus {
