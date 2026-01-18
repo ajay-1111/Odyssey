@@ -100,10 +100,18 @@ export default function DashboardPage() {
           </Link>
           
           <div className="flex items-center gap-3">
-            <button onClick={toggleTheme} className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: 'var(--card-bg)' }}>
+            <Select value={currency} onValueChange={setCurrency}>
+              <SelectTrigger className="w-24 h-10 rounded-xl" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }} data-testid="currency-selector-dashboard">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent className="rounded-xl" style={{ background: 'var(--background-secondary)' }}>
+                {currencies.map(c => <SelectItem key={c.code} value={c.code}>{c.code} {c.symbol}</SelectItem>)}
+              </SelectContent>
+            </Select>
+            <button onClick={toggleTheme} className="w-10 h-10 rounded-xl flex items-center justify-center transition-all hover:scale-110" style={{ background: 'var(--card-bg)' }}>
               {theme === 'dark' ? <Sun className="w-5 h-5 text-amber-400" /> : <Moon className="w-5 h-5 text-violet-500" />}
             </button>
-            <button onClick={() => navigate('/plan')} className="btn-gradient" data-testid="new-trip-btn">
+            <button onClick={() => navigate('/plan')} className="btn-gradient btn-press" data-testid="new-trip-btn">
               <Plus className="w-4 h-4 mr-2 inline" /> New Trip
             </button>
             
