@@ -488,6 +488,10 @@ Make the itinerary realistic, detailed, and within budget. Include actual popula
         
     except Exception as e:
         logger.error(f"AI Trip Generation Error: {str(e)}")
+        # If AI fails (budget exceeded, service down, etc.), use fallback
+        if "Budget has been exceeded" in str(e) or "BadGatewayError" in str(e) or "502" in str(e):
+            logger.info("Using fallback trip generation due to AI service unavailability")
+            return generate_fallback_trip(trip_request, total_days, total_travelers)
         raise HTTPException(status_code=500, detail=f"Failed to generate trip plan: {str(e)}")
 
 @api_router.post("/trips/generate")
