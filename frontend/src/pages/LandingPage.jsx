@@ -58,7 +58,7 @@ export default function LandingPage() {
       toast.success('Message sent successfully!');
       setContactForm({ name: '', email: '', subject: '', message: '' });
     } catch (error) {
-      toast.error('Failed to send message');
+      toast.error(getErrorMessage(error, 'Failed to send message'));
     } finally {
       setSubmitting(false);
     }
@@ -72,7 +72,7 @@ export default function LandingPage() {
       toast.success('Subscribed successfully!');
       setNewsletterEmail('');
     } catch (error) {
-      toast.error('Failed to subscribe');
+      toast.error(getErrorMessage(error, 'Failed to subscribe'));
     }
   };
 
