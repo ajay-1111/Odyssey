@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import axios from 'axios';
 import { toast } from 'sonner';
+import { getErrorMessage } from '../utils/errorHandler';
 
 const API_URL = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
@@ -22,7 +23,7 @@ export default function TripDetailPage() {
         sessionStorage.setItem('generatedTrip', JSON.stringify(response.data));
         navigate('/trip-result');
       } catch (error) {
-        toast.error('Trip not found');
+        toast.error(getErrorMessage(error, 'Trip not found'));
         navigate('/dashboard');
       }
     };
