@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -51,7 +51,14 @@ const CityAutocomplete = ({ value, onChange, placeholder, testId }) => {
   const [suggestions, setSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
 
-  useEffect(() => { setQuery(value || ''); }, [value]);
+  // Sync query with external value prop
+  const prevValue = useRef(value);
+  if (prevValue.current !== value) {
+    prevValue.current = value;
+    if (query !== (value || '')) {
+      setQuery(value || '');
+    }
+  }
 
   const fetchSuggestions = async (q) => {
     if (q.length < 2) { setSuggestions([]); return; }

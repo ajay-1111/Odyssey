@@ -334,7 +334,7 @@ export default function LandingPage() {
                   <Quote className="absolute -top-4 -left-2 w-8 h-8 text-violet-500/30" />
                   <p className="text-lg md:text-xl leading-relaxed pl-6" style={{ color: 'var(--foreground-muted)' }}>
                     As a <span className="text-violet-500 font-semibold">Senior Developer</span> with a passion for travel, 
-                    I've explored several countries and understood one thing — <span className="font-semibold" style={{ color: 'var(--foreground)' }}>trip planning shouldn't be stressful</span>.
+                    I&apos;ve explored several countries and understood one thing — <span className="font-semibold" style={{ color: 'var(--foreground)' }}>trip planning shouldn&apos;t be stressful</span>.
                   </p>
                 </div>
                 
@@ -380,7 +380,7 @@ export default function LandingPage() {
                     <Star key={j} className="w-5 h-5 star-filled" />
                   ))}
                 </div>
-                <p className="mb-6 leading-relaxed" style={{ color: 'var(--foreground-muted)' }}>"{review.text}"</p>
+                <p className="mb-6 leading-relaxed" style={{ color: 'var(--foreground-muted)' }}>&ldquo;{review.text}&rdquo;</p>
                 <div className="flex items-center gap-3">
                   <img src={review.avatar} alt={review.name} className="w-12 h-12 rounded-full object-cover" />
                   <div>
@@ -468,9 +468,9 @@ export default function LandingPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
             {/* Info */}
             <motion.div initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}>
-              <h3 className="font-heading text-2xl font-bold mb-6" style={{ color: 'var(--foreground)' }}>We'd Love to Hear From You</h3>
+              <h3 className="font-heading text-2xl font-bold mb-6" style={{ color: 'var(--foreground)' }}>We&apos;d Love to Hear From You</h3>
               <p className="mb-8 text-lg" style={{ color: 'var(--foreground-muted)' }}>
-                Have questions? Want to partner with us? We're here to help!
+                Have questions? Want to partner with us? We&apos;re here to help!
               </p>
 
               <div className="space-y-4 mb-8">

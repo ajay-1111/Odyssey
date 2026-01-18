@@ -105,7 +105,7 @@ export default function LoginPage() {
           </form>
 
           <p className="text-center mt-8" style={{ color: 'var(--foreground-muted)' }}>
-            Don't have an account?{' '}
+            Don&apos;t have an account?{' '}
             <Link to="/register" className="text-violet-500 hover:text-violet-400 font-medium transition-colors">Create one</Link>
           </p>
 
@@ -130,7 +130,7 @@ export default function LoginPage() {
         <div className="absolute inset-0 flex items-center justify-center p-12">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="glass p-8 rounded-3xl max-w-md">
             <blockquote className="font-heading text-2xl font-semibold mb-4" style={{ color: 'var(--foreground)' }}>
-              "Odyssey turned our honeymoon into a seamlessly planned adventure. Every detail was perfect."
+              &ldquo;Odyssey turned our honeymoon into a seamlessly planned adventure. Every detail was perfect.&rdquo;
             </blockquote>
             <div className="flex items-center gap-3">
               <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100" alt="Sarah" className="w-12 h-12 rounded-full object-cover" />
