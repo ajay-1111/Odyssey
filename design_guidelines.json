@@ -1,0 +1,168 @@
+{
+  "brand_identity": {
+    "name": "Odyssey",
+    "tagline": "The Art of Getting Lost, Curated by AI.",
+    "tone": "Breathtaking, Immersive, Trustworthy, Premium",
+    "archetype": "Jewel & Luxury",
+    "principles": [
+      "Fusion over Imitation: Mix editorial travel magazine aesthetics with SaaS precision.",
+      "Emotion First: Every interaction should feel like the start of a journey.",
+      "Content is King: Destinations are the heroes; UI is the frame.",
+      "Zoom In: Use macro textures of maps, passports, and luggage tags.",
+      "Negative Space: Luxury is defined by what you leave out."
+    ]
+  },
+  "typography": {
+    "fonts": {
+      "heading": {
+        "family": "Playfair Display",
+        "fallback": "serif",
+        "weights": ["400", "600", "700"],
+        "usage": "All H1-H3 headings, hero titles, and editorial quotes."
+      },
+      "body": {
+        "family": "Manrope",
+        "fallback": "sans-serif",
+        "weights": ["300", "400", "500", "600"],
+        "usage": "UI elements, paragraphs, inputs, and data displays."
+      },
+      "accent": {
+        "family": "Cormorant Garamond",
+        "fallback": "serif",
+        "weights": ["400", "500"],
+        "usage": "Italicized subheadings, testimonials, and 'handwritten' notes."
+      }
+    },
+    "rules": [
+      "Headings > 32px must use tracking-tight.",
+      "Overlines must be UPPERCASE, text-xs, and tracking-widest.",
+      "Never use Inter for headings.",
+      "Use font-light (300) for large display text to feel elegant."
+    ]
+  },
+  "colors": {
+    "theme": "dark",
+    "palette": {
+      "background": {
+        "default": "#050505",
+        "paper": "#0A0A0A",
+        "subtle": "#121212"
+      },
+      "text": {
+        "primary": "#EDEDED",
+        "secondary": "#A1A1AA",
+        "muted": "#52525B",
+        "inverse": "#000000"
+      },
+      "primary": {
+        "main": "#D4AF37",
+        "light": "#E5C568",
+        "dark": "#A38322",
+        "contrast": "#000000"
+      },
+      "secondary": {
+        "main": "#2E4053",
+        "light": "#5D6D7E",
+        "dark": "#1B2631",
+        "contrast": "#FFFFFF"
+      },
+      "accent": {
+        "teal": "#14B8A6",
+        "sunset": "#F97316",
+        "error": "#EF4444",
+        "success": "#10B981"
+      },
+      "border": {
+        "default": "rgba(255, 255, 255, 0.1)",
+        "active": "rgba(212, 175, 55, 0.5)"
+      }
+    },
+    "gradients": {
+      "hero": "linear-gradient(to bottom, rgba(5,5,5,0) 0%, #050505 100%)",
+      "gold_glow": "radial-gradient(circle at center, rgba(212, 175, 55, 0.15) 0%, rgba(0,0,0,0) 70%)",
+      "glass": "linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%)"
+    }
+  },
+  "layout": {
+    "spacing_scale": ["0", "1", "2", "4", "6", "8", "12", "16", "20", "24", "32", "40", "48", "64", "80", "96", "128"],
+    "container": {
+      "max_width": "1400px",
+      "padding": "2rem"
+    },
+    "grids": {
+      "marketing": "grid-cols-1 md:grid-cols-12 gap-8",
+      "dashboard": "grid-cols-1 md:grid-cols-4 gap-6"
+    },
+    "border_radius": {
+      "sm": "2px",
+      "md": "4px",
+      "lg": "8px",
+      "xl": "16px",
+      "full": "9999px"
+    }
+  },
+  "components": {
+    "buttons": {
+      "primary": "bg-[#D4AF37] text-black hover:bg-[#E5C568] rounded-full px-8 py-3 font-medium transition-all duration-300 hover:scale-105",
+      "secondary": "bg-transparent border border-white/20 text-white hover:bg-white/5 rounded-full px-8 py-3 transition-all duration-300",
+      "ghost": "text-white/70 hover:text-[#D4AF37] transition-colors duration-200"
+    },
+    "cards": {
+      "glass": "bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl rounded-xl hover:border-white/20 transition-all duration-300",
+      "solid": "bg-[#0A0A0A] border border-white/5 rounded-xl"
+    },
+    "inputs": {
+      "default": "bg-white/5 border-white/10 text-white placeholder:text-white/30 focus:border-[#D4AF37]/50 focus:ring-1 focus:ring-[#D4AF37]/50 rounded-lg h-12 px-4 transition-all"
+    },
+    "navigation": {
+      "header": "fixed top-0 w-full z-50 bg-[#050505]/80 backdrop-blur-md border-b border-white/5",
+      "sidebar": "fixed left-0 h-full w-64 bg-[#0A0A0A] border-r border-white/5"
+    }
+  },
+  "assets": {
+    "images": {
+      "hero_main": "https://images.unsplash.com/photo-1694430684128-409007a848d6?crop=entropy&cs=srgb&fm=jpg&q=85",
+      "hotel_luxury": "https://images.unsplash.com/photo-1768543939471-31137d09e8de?crop=entropy&cs=srgb&fm=jpg&q=85",
+      "flight_view": "https://images.unsplash.com/photo-1542382248-cc0aa645262c?crop=entropy&cs=srgb&fm=jpg&q=85",
+      "destination_volcano": "https://images.unsplash.com/photo-1669668869489-aa778bf6d594?crop=entropy&cs=srgb&fm=jpg&q=85",
+      "destination_beach": "https://images.unsplash.com/photo-1750236837562-cd8e030f1038?crop=entropy&cs=srgb&fm=jpg&q=85"
+    },
+    "icons": {
+      "library": "lucide-react",
+      "style": "stroke-width-1.5"
+    }
+  },
+  "motion": {
+    "transitions": {
+      "default": "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+      "slow": "all 0.7s cubic-bezier(0.4, 0, 0.2, 1)"
+    },
+    "animations": {
+      "fade_in": "animate-in fade-in duration-500",
+      "slide_up": "animate-in slide-in-from-bottom-4 duration-500",
+      "scale_in": "animate-in zoom-in-95 duration-300"
+    }
+  },
+  "tech_stack": {
+    "framework": "React",
+    "styling": "Tailwind CSS",
+    "components": "Shadcn UI",
+    "icons": "Lucide React",
+    "charts": "Recharts",
+    "maps": "React Google Maps",
+    "date_handling": "date-fns",
+    "animation": "Framer Motion"
+  },
+  "universal_guidelines": [
+    "Do not use gradients for text unless it's a very subtle gold shimmer.",
+    "Avoid 'Inter' font for headings. Use 'Playfair Display'.",
+    "Use 2-3x more spacing than typical designs.",
+    "Dark mode is mandatory. Do not create a light mode toggle unless requested.",
+    "All interactive elements must have a hover state.",
+    "Use 'sonner' for toasts.",
+    "Components must use named exports.",
+    "Pages must use default exports.",
+    "All interactive elements must include data-testid attributes."
+  ],
+  "instructions_to_main_agent": "You are building 'Odyssey', a premium AI travel planner. Your goal is to make it feel like a high-end travel magazine that happens to be a functional app. Use the provided image URLs for the landing page and placeholders. Implement the 'Jewel & Luxury' color palette strictly. Use the 'Tetris' grid for the landing page destination showcase. For the dashboard, use the 'High Density' grid but keep it breathable with padding."
+}
