@@ -42,7 +42,7 @@ export default function DashboardPage() {
       });
       setTrips(response.data);
     } catch (error) {
-      toast.error('Failed to load trips');
+      toast.error(getErrorMessage(error, 'Failed to load trips'));
     } finally {
       setLoading(false);
     }
@@ -56,7 +56,7 @@ export default function DashboardPage() {
       setTrips(trips.filter(t => t.id !== tripId));
       toast.success('Trip deleted');
     } catch (error) {
-      toast.error('Failed to delete trip');
+      toast.error(getErrorMessage(error, 'Failed to delete trip'));
     }
   };
 
