@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -25,7 +26,7 @@ export default function DashboardPage() {
   const navigate = useNavigate();
   const { user, logout, getAuthHeader } = useAuth();
   const { theme, toggleTheme } = useTheme();
-  const { formatPrice } = useCurrency();
+  const { currency, setCurrency, currencies, formatPrice } = useCurrency();
   const [trips, setTrips] = useState([]);
   const [loading, setLoading] = useState(true);
 
