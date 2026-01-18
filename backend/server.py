@@ -210,6 +210,173 @@ async def get_me(current_user: dict = Depends(get_current_user)):
 
 # ==================== TRIP PLANNING ====================
 
+def generate_fallback_trip(trip_request: TripRequest, total_days: int, total_travelers: int) -> dict:
+    """Generate a fallback trip plan when AI is unavailable"""
+    from datetime import datetime as dt, timedelta
+    
+    start = dt.strptime(trip_request.start_date, "%Y-%m-%d")
+    daily_budget = trip_request.budget / total_days / max(total_travelers, 1)
+    
+    # Generate day-wise itinerary
+    itinerary = []
+    for i in range(total_days):
+        current_date = start + timedelta(days=i)
+        dest_idx = min(i, len(trip_request.destinations) - 1)
+        destination = trip_request.destinations[dest_idx] if trip_request.destinations else "Unknown"
+        
+        itinerary.append({
+            "day_number": i + 1,
+            "date": current_date.strftime("%Y-%m-%d"),
+            "location": destination,
+            "weather": {
+                "temp_high": 25 + (i % 5),
+                "temp_low": 15 + (i % 3),
+                "condition": ["Sunny", "Partly Cloudy", "Clear"][i % 3],
+                "humidity": 50 + (i % 20)
+            },
+            "morning_activities": [
+                {
+                    "name": f"Explore {destination} Morning Highlights",
+                    "description": f"Visit popular morning attractions in {destination}",
+                    "duration": "3 hours",
+                    "cost": int(daily_budget * 0.15),
+                    "location": f"Central {destination}",
+                    "maps_link": f"https://maps.google.com/?q={destination.replace(' ', '+')}+attractions",
+                    "tips": "Book tickets in advance for popular sites"
+                }
+            ],
+            "afternoon_activities": [
+                {
+                    "name": f"Cultural Discovery in {destination}",
+                    "description": f"Explore museums, galleries, or local markets",
+                    "duration": "3 hours",
+                    "cost": int(daily_budget * 0.10),
+                    "location": f"Downtown {destination}",
+                    "maps_link": f"https://maps.google.com/?q={destination.replace(' ', '+')}+museums",
+                    "tips": "Many museums offer free entry on certain days"
+                }
+            ],
+            "evening_activities": [
+                {
+                    "name": f"Evening in {destination}",
+                    "description": f"Enjoy local nightlife, views, or entertainment",
+                    "duration": "2 hours",
+                    "cost": int(daily_budget * 0.10),
+                    "location": f"{destination} Entertainment District",
+                    "maps_link": f"https://maps.google.com/?q={destination.replace(' ', '+')}+nightlife",
+                    "tips": "Book popular shows or restaurants in advance"
+                }
+            ],
+            "restaurants": [
+                {
+                    "name": f"Local Restaurant in {destination}",
+                    "cuisine": "Local Cuisine",
+                    "price_range": "$$",
+                    "must_try": ["Local specialty", "Traditional dish"],
+                    "location": f"City Center, {destination}",
+                    "maps_link": f"https://maps.google.com/?q={destination.replace(' ', '+')}+restaurants",
+                    "booking_link": "https://www.tripadvisor.com"
+                }
+            ],
+            "transportation": [
+                {
+                    "type": "Metro/Local Transport",
+                    "from": "Hotel",
+                    "to": "City Center",
+                    "duration": "30 min",
+                    "cost": int(daily_budget * 0.05),
+                    "booking_link": "https://www.rome2rio.com"
+                }
+            ],
+            "day_trips": [],
+            "estimated_cost": int(daily_budget * 0.8)
+        })
+    
+    # Generate visa requirements
+    visa_requirements = []
+    for dest in trip_request.destinations:
+        country = dest.split(',')[-1].strip() if ',' in dest else dest
+        visa_requirements.append({
+            "country": country,
+            "visa_required": True,
+            "visa_type": "Tourist Visa",
+            "processing_time": "5-10 business days",
+            "cost": 50,
+            "notes": f"Check {country} embassy website for latest requirements",
+            "apply_link": f"https://www.google.com/search?q={country.replace(' ', '+')}+tourist+visa+application"
+        })
+    
+    # Generate flights
+    flights = []
+    if trip_request.destinations:
+        flights.append({
+            "from": trip_request.departure_location,
+            "to": trip_request.destinations[0],
+            "date": trip_request.start_date,
+            "estimated_price": int(trip_request.budget * 0.25 / max(total_travelers, 1)),
+            "airlines": ["Multiple airlines available"],
+            "booking_links": {
+                "skyscanner": f"https://www.skyscanner.com/transport/flights/{trip_request.departure_location.replace(' ', '-')}/{trip_request.destinations[0].replace(' ', '-')}/",
+                "google_flights": "https://www.google.com/flights",
+                "kayak": "https://www.kayak.com"
+            }
+        })
+        flights.append({
+            "from": trip_request.destinations[-1],
+            "to": trip_request.departure_location,
+            "date": trip_request.end_date,
+            "estimated_price": int(trip_request.budget * 0.25 / max(total_travelers, 1)),
+            "airlines": ["Multiple airlines available"],
+            "booking_links": {
+                "skyscanner": "https://www.skyscanner.com",
+                "google_flights": "https://www.google.com/flights",
+                "kayak": "https://www.kayak.com"
+            }
+        })
+    
+    return {
+        "id": str(uuid.uuid4()),
+        "title": f"Adventure to {', '.join(trip_request.destinations)}",
+        "departure_location": trip_request.departure_location,
+        "destinations": trip_request.destinations,
+        "start_date": trip_request.start_date,
+        "end_date": trip_request.end_date,
+        "budget": trip_request.budget,
+        "currency": trip_request.currency,
+        "travelers": trip_request.travelers.model_dump(),
+        "total_days": total_days,
+        "visa_requirements": visa_requirements,
+        "flights": flights,
+        "itinerary": itinerary,
+        "booking_links": {
+            "flights": {
+                "skyscanner": "https://www.skyscanner.com",
+                "google_flights": "https://www.google.com/flights",
+                "kayak": "https://www.kayak.com"
+            },
+            "hotels": {
+                "booking": "https://www.booking.com",
+                "airbnb": "https://www.airbnb.com",
+                "agoda": "https://www.agoda.com",
+                "hotels": "https://www.hotels.com"
+            },
+            "transportation": {
+                "uber": "https://www.uber.com",
+                "lyft": "https://www.lyft.com",
+                "rental_cars": "https://www.rentalcars.com",
+                "rome2rio": "https://www.rome2rio.com"
+            },
+            "experiences": {
+                "viator": "https://www.viator.com",
+                "getyourguide": "https://www.getyourguide.com",
+                "tripadvisor": "https://www.tripadvisor.com"
+            }
+        },
+        "total_estimated_cost": int(trip_request.budget * 0.85),
+        "created_at": datetime.now(timezone.utc).isoformat(),
+        "_note": "This is a template itinerary. For AI-personalized recommendations, please add credits to your Universal Key at Profile > Universal Key > Add Balance"
+    }
+
 async def generate_trip_with_ai(trip_request: TripRequest) -> dict:
     """Generate comprehensive trip plan using OpenAI GPT-5.2"""
     api_key = os.environ.get('EMERGENT_LLM_KEY')
