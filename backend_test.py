@@ -89,7 +89,7 @@ class OdysseyAPITester:
         
         # Generate unique test user
         timestamp = datetime.now().strftime('%H%M%S')
-        test_email = f"test_user_{timestamp}@odyssey.test"
+        test_email = f"test_user_{timestamp}@example.com"
         test_password = "TestPass123!"
         test_name = f"Test User {timestamp}"
 
