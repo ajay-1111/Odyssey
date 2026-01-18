@@ -238,7 +238,7 @@ class TestAuthEndpoints:
     """Tests for authentication endpoints"""
     
     def test_register_new_user(self):
-        unique_email = f"test_{uuid.uuid4().hex[:8]}@odyssey.test"
+        unique_email = f"test_{uuid.uuid4().hex[:8]}@example.com"
         response = requests.post(f"{BASE_URL}/api/auth/register", json={
             "email": unique_email,
             "password": "testpass123",
@@ -251,7 +251,7 @@ class TestAuthEndpoints:
         assert data["user"]["email"] == unique_email
     
     def test_register_duplicate_email(self):
-        unique_email = f"test_{uuid.uuid4().hex[:8]}@odyssey.test"
+        unique_email = f"test_{uuid.uuid4().hex[:8]}@example.com"
         # First registration
         requests.post(f"{BASE_URL}/api/auth/register", json={
             "email": unique_email,
