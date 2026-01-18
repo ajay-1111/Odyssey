@@ -19,6 +19,7 @@ import { useTheme } from '../context/ThemeContext';
 import { useCurrency } from '../context/CurrencyContext';
 import axios from 'axios';
 import { toast } from 'sonner';
+import { getErrorMessage } from '../utils/errorHandler';
 
 const API_URL = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
