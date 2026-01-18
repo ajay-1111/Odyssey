@@ -4,7 +4,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Plane, MapPin, Calendar, Users, DollarSign, Utensils,
   ArrowRight, ArrowLeft, Plus, X, Sparkles, Home, Heart,
-  Baby, User, UserCheck, Search, Check
+  Baby, User, UserCheck, Check, Sun, Moon, Globe,
+  Briefcase, Hotel, Shield, Dumbbell, Flag
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
@@ -14,17 +15,24 @@ import { Popover, PopoverContent, PopoverTrigger } from '../components/ui/popove
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { Badge } from '../components/ui/badge';
 import { ScrollArea } from '../components/ui/scroll-area';
-import { format, addDays, differenceInDays } from 'date-fns';
+import { Checkbox } from '../components/ui/checkbox';
+import { RadioGroup, RadioGroupItem } from '../components/ui/radio-group';
+import { Textarea } from '../components/ui/textarea';
+import { format, differenceInDays } from 'date-fns';
 import axios from 'axios';
 import { toast } from 'sonner';
+import { useTheme } from '../context/ThemeContext';
+import { useCurrency } from '../context/CurrencyContext';
 
 const API_URL = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
 const STEPS = [
-  { id: 1, title: "Destinations", icon: MapPin },
-  { id: 2, title: "Dates", icon: Calendar },
-  { id: 3, title: "Travelers", icon: Users },
-  { id: 4, title: "Preferences", icon: Heart }
+  { id: 1, title: "Trip Type", icon: Briefcase },
+  { id: 2, title: "Passport & Visa", icon: Flag },
+  { id: 3, title: "Destinations", icon: MapPin },
+  { id: 4, title: "Dates", icon: Calendar },
+  { id: 5, title: "Travelers", icon: Users },
+  { id: 6, title: "Preferences", icon: Heart }
 ];
 
 const INTERESTS = [
@@ -34,16 +42,21 @@ const INTERESTS = [
   "Wildlife & Safari", "Wellness & Spa", "Local Experiences"
 ];
 
+const FITNESS_OPTIONS = [
+  "Gym Access", "Running/Jogging", "Yoga Classes", "Swimming",
+  "Cycling", "Marathons/Events", "CrossFit", "Zumba/Dance",
+  "Hiking Trails", "Water Sports"
+];
+
 // City Autocomplete Component
 const CityAutocomplete = ({ value, onChange, placeholder, testId }) => {
-  const [query, setQuery] = useState(value);
+  const [query, setQuery] = useState(value || '');
   const [suggestions, setSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
-  const [loading, setLoading] = useState(false);
   const inputRef = useRef(null);
 
   useEffect(() => {
-    setQuery(value);
+    setQuery(value || '');
   }, [value]);
 
   const fetchSuggestions = async (q) => {
@@ -51,14 +64,12 @@ const CityAutocomplete = ({ value, onChange, placeholder, testId }) => {
       setSuggestions([]);
       return;
     }
-    setLoading(true);
     try {
       const response = await axios.get(`${API_URL}/autocomplete/cities?q=${encodeURIComponent(q)}`);
       setSuggestions(response.data);
+      setShowSuggestions(true);
     } catch (error) {
       console.error('Autocomplete error:', error);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -67,13 +78,12 @@ const CityAutocomplete = ({ value, onChange, placeholder, testId }) => {
     setQuery(val);
     onChange(val);
     fetchSuggestions(val);
-    setShowSuggestions(true);
   };
 
   const selectSuggestion = (city) => {
     const formatted = `${city.city}, ${city.country}`;
     setQuery(formatted);
-    onChange(formatted);
+    onChange(formatted, city);
     setShowSuggestions(false);
   };
 
@@ -83,10 +93,10 @@ const CityAutocomplete = ({ value, onChange, placeholder, testId }) => {
         ref={inputRef}
         value={query}
         onChange={handleInputChange}
-        onFocus={() => query.length >= 2 && setShowSuggestions(true)}
+        onFocus={() => query.length >= 2 && fetchSuggestions(query)}
         onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
         placeholder={placeholder}
-        className="pl-12 h-14 bg-white/5 border-white/10 text-white placeholder:text-white/30 focus:border-[#D4AF37]/50"
+        className="h-14 bg-[var(--input-bg)] border-[var(--border)] text-[var(--foreground)] placeholder:text-[var(--foreground-muted)]"
         data-testid={testId}
       />
       
@@ -96,20 +106,26 @@ const CityAutocomplete = ({ value, onChange, placeholder, testId }) => {
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            className="absolute z-50 w-full mt-1 bg-[#0A0A0A] border border-white/10 rounded-lg shadow-xl overflow-hidden"
+            className="absolute z-50 w-full mt-1 rounded-lg shadow-xl overflow-hidden"
+            style={{ background: 'var(--background-secondary)', border: '1px solid var(--border)' }}
           >
             <ScrollArea className="max-h-60">
               {suggestions.map((city, i) => (
                 <button
                   key={i}
                   onClick={() => selectSuggestion(city)}
-                  className="w-full px-4 py-3 text-left hover:bg-white/5 flex items-center gap-3 transition-colors"
+                  className="w-full px-4 py-3 text-left flex items-center gap-3 transition-colors hover:bg-[var(--card-hover)]"
                 >
                   <MapPin className="w-4 h-4 text-[#D4AF37]" />
                   <div>
-                    <span className="text-white">{city.city}</span>
-                    <span className="text-white/50 ml-2">{city.country}</span>
+                    <span style={{ color: 'var(--foreground)' }}>{city.city}</span>
+                    <span style={{ color: 'var(--foreground-muted)' }} className="ml-2">{city.country}</span>
                   </div>
+                  {city.airports && (
+                    <span className="ml-auto text-xs" style={{ color: 'var(--foreground-muted)' }}>
+                      {city.airports.length} airport{city.airports.length > 1 ? 's' : ''}
+                    </span>
+                  )}
                 </button>
               ))}
             </ScrollArea>
@@ -122,17 +138,38 @@ const CityAutocomplete = ({ value, onChange, placeholder, testId }) => {
 
 export default function PlanTripPage() {
   const navigate = useNavigate();
+  const { theme, toggleTheme } = useTheme();
+  const { currency, setCurrency, currencies, formatPrice, getSymbol } = useCurrency();
+  
   const [currentStep, setCurrentStep] = useState(1);
   const [loading, setLoading] = useState(false);
-  const [currencies, setCurrencies] = useState([]);
+  const [countries, setCountries] = useState([]);
 
-  // Form state
+  // Customer Type
+  const [customerType, setCustomerType] = useState('fresh');
+  
+  // Existing Bookings (for plan_only and partial)
+  const [existingBookings, setExistingBookings] = useState({
+    hasFlight: false,
+    flightDetails: { departureTime: '', arrivalTime: '', returnDepartureTime: '', returnArrivalTime: '', airline: '' },
+    hasHotel: false,
+    hotelDetails: { name: '', address: '', checkIn: '', checkOut: '' },
+    hasInsurance: false
+  });
+  
+  // Passport
+  const [passportCountries, setPassportCountries] = useState([]);
+  
+  // Trip Details
   const [departure, setDeparture] = useState('');
-  const [destinations, setDestinations] = useState(['']);
+  const [departureAirports, setDepartureAirports] = useState([]);
+  const [selectedDepartureAirports, setSelectedDepartureAirports] = useState([]);
+  const [destinations, setDestinations] = useState([{ city: '', airports: [] }]);
   const [startDate, setStartDate] = useState(null);
   const [endDate, setEndDate] = useState(null);
   const [budget, setBudget] = useState('');
-  const [currency, setCurrency] = useState('USD');
+  
+  // Travelers
   const [travelers, setTravelers] = useState({
     adults: 1,
     children_above_10: 0,
@@ -140,26 +177,40 @@ export default function PlanTripPage() {
     seniors: 0,
     infants: 0
   });
+  
+  // Preferences
   const [foodPreference, setFoodPreference] = useState('No preference');
   const [accommodationType, setAccommodationType] = useState('mid-range');
   const [interests, setInterests] = useState([]);
+  const [fitnessInterests, setFitnessInterests] = useState([]);
+  const [needInsurance, setNeedInsurance] = useState(true);
+  const [cabinClass, setCabinClass] = useState('economy');
 
-  // Fetch currencies
+  // Fetch countries on load
   useEffect(() => {
-    const fetchCurrencies = async () => {
+    const fetchCountries = async () => {
       try {
-        const response = await axios.get(`${API_URL}/currencies`);
-        setCurrencies(response.data);
+        const response = await axios.get(`${API_URL}/countries`);
+        setCountries(response.data);
       } catch (error) {
-        console.error('Failed to fetch currencies');
+        console.error('Failed to fetch countries');
       }
     };
-    fetchCurrencies();
+    fetchCountries();
   }, []);
+
+  // Fetch airports when departure changes
+  const handleDepartureChange = async (value, cityData) => {
+    setDeparture(value);
+    if (cityData?.airports) {
+      setDepartureAirports(cityData.airports);
+      setSelectedDepartureAirports(cityData.airports.map(a => a.code));
+    }
+  };
 
   const addDestination = () => {
     if (destinations.length < 5) {
-      setDestinations([...destinations, '']);
+      setDestinations([...destinations, { city: '', airports: [] }]);
     }
   };
 
@@ -169,10 +220,18 @@ export default function PlanTripPage() {
     }
   };
 
-  const updateDestination = (index, value) => {
+  const updateDestination = (index, value, cityData) => {
     const newDests = [...destinations];
-    newDests[index] = value;
+    newDests[index] = { city: value, airports: cityData?.airports || [] };
     setDestinations(newDests);
+  };
+
+  const togglePassport = (countryCode) => {
+    if (passportCountries.includes(countryCode)) {
+      setPassportCountries(passportCountries.filter(c => c !== countryCode));
+    } else {
+      setPassportCountries([...passportCountries, countryCode]);
+    }
   };
 
   const toggleInterest = (interest) => {
@@ -183,21 +242,26 @@ export default function PlanTripPage() {
     }
   };
 
+  const toggleFitness = (fitness) => {
+    if (fitnessInterests.includes(fitness)) {
+      setFitnessInterests(fitnessInterests.filter(f => f !== fitness));
+    } else {
+      setFitnessInterests([...fitnessInterests, fitness]);
+    }
+  };
+
   const totalTravelers = Object.values(travelers).reduce((a, b) => a + b, 0);
   const tripDays = startDate && endDate ? differenceInDays(endDate, startDate) + 1 : 0;
 
   const canProceed = () => {
     switch (currentStep) {
-      case 1:
-        return departure.trim() && destinations.some(d => d.trim());
-      case 2:
-        return startDate && endDate && tripDays > 0;
-      case 3:
-        return totalTravelers > 0 && budget > 0;
-      case 4:
-        return true;
-      default:
-        return false;
+      case 1: return customerType;
+      case 2: return passportCountries.length > 0;
+      case 3: return departure.trim() && destinations.some(d => d.city.trim());
+      case 4: return startDate && endDate && tripDays > 0;
+      case 5: return totalTravelers > 0 && budget > 0;
+      case 6: return true;
+      default: return false;
     }
   };
 
@@ -205,8 +269,18 @@ export default function PlanTripPage() {
     setLoading(true);
     try {
       const tripRequest = {
+        customer_type: customerType,
+        existing_bookings: customerType !== 'fresh' ? {
+          has_flight: existingBookings.hasFlight,
+          flight_details: existingBookings.flightDetails,
+          has_hotel: existingBookings.hasHotel,
+          hotel_details: existingBookings.hotelDetails,
+          has_insurance: existingBookings.hasInsurance
+        } : null,
+        passport_countries: passportCountries,
         departure_location: departure,
-        destinations: destinations.filter(d => d.trim()),
+        departure_airports: selectedDepartureAirports,
+        destinations: destinations.filter(d => d.city.trim()).map(d => d.city),
         start_date: format(startDate, 'yyyy-MM-dd'),
         end_date: format(endDate, 'yyyy-MM-dd'),
         budget: parseFloat(budget),
@@ -214,7 +288,10 @@ export default function PlanTripPage() {
         travelers,
         food_preferences: foodPreference,
         accommodation_type: accommodationType,
-        interests
+        interests,
+        fitness_interests: fitnessInterests,
+        need_insurance: needInsurance && !existingBookings.hasInsurance,
+        cabin_class: cabinClass
       };
 
       const response = await axios.post(`${API_URL}/trips/generate`, tripRequest);
@@ -228,59 +305,68 @@ export default function PlanTripPage() {
     }
   };
 
-  const getCurrencySymbol = (code) => {
-    const curr = currencies.find(c => c.code === code);
-    return curr ? curr.symbol : code;
-  };
-
   return (
-    <div className="min-h-screen bg-[#050505]" data-testid="plan-trip-page">
+    <div className="min-h-screen" style={{ background: 'var(--background)' }} data-testid="plan-trip-page">
       {/* Header */}
-      <nav className="fixed top-0 w-full z-50 bg-[#050505]/80 backdrop-blur-md border-b border-white/5">
+      <nav className="fixed top-0 w-full z-50 backdrop-blur-md border-b" style={{ background: 'var(--background)', borderColor: 'var(--border)' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2">
             <div className="w-8 sm:w-10 h-8 sm:h-10 rounded-full bg-gradient-to-br from-[#D4AF37] to-[#A38322] flex items-center justify-center">
               <Plane className="w-4 sm:w-5 h-4 sm:h-5 text-black" />
             </div>
-            <span className="font-heading text-xl sm:text-2xl text-white tracking-tight">Odyssey</span>
+            <span className="font-heading text-xl sm:text-2xl tracking-tight" style={{ color: 'var(--foreground)' }}>Odyssey</span>
           </Link>
           
-          <Link to="/" className="text-white/70 hover:text-[#D4AF37] transition-colors font-body flex items-center gap-2 text-sm sm:text-base">
-            <Home className="w-4 h-4" />
-            <span className="hidden sm:inline">Back to Home</span>
-          </Link>
+          <div className="flex items-center gap-4">
+            {/* Currency Selector */}
+            <Select value={currency} onValueChange={setCurrency}>
+              <SelectTrigger className="w-24 h-9 text-xs" style={{ background: 'var(--input-bg)', borderColor: 'var(--border)' }}>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent style={{ background: 'var(--background-secondary)' }}>
+                {currencies.map((curr) => (
+                  <SelectItem key={curr.code} value={curr.code}>
+                    {curr.symbol} {curr.code}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            
+            {/* Theme Toggle */}
+            <button
+              onClick={toggleTheme}
+              className="w-10 h-10 rounded-full flex items-center justify-center transition-colors"
+              style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}
+              data-testid="theme-toggle"
+            >
+              {theme === 'dark' ? <Sun className="w-5 h-5 text-[#D4AF37]" /> : <Moon className="w-5 h-5 text-[#D4AF37]" />}
+            </button>
+            
+            <Link to="/" className="hidden sm:flex items-center gap-2 text-sm" style={{ color: 'var(--foreground-muted)' }}>
+              <Home className="w-4 h-4" />
+              Home
+            </Link>
+          </div>
         </div>
       </nav>
 
       <div className="pt-24 sm:pt-28 pb-20 px-4 sm:px-6">
-        <div className="max-w-3xl mx-auto">
+        <div className="max-w-4xl mx-auto">
           {/* Progress Steps */}
           <div className="flex items-center justify-between mb-8 sm:mb-12 overflow-x-auto pb-2">
             {STEPS.map((step, i) => (
               <div key={step.id} className="flex items-center flex-shrink-0">
-                <div 
-                  className={`flex flex-col items-center ${
-                    currentStep >= step.id ? 'text-[#D4AF37]' : 'text-white/30'
-                  }`}
-                >
-                  <div className={`
-                    w-10 sm:w-12 h-10 sm:h-12 rounded-full flex items-center justify-center transition-all
-                    ${currentStep === step.id ? 'bg-[#D4AF37] text-black' : 
-                      currentStep > step.id ? 'bg-[#D4AF37]/20 text-[#D4AF37]' : 
-                      'bg-white/5 text-white/30'}
-                  `}>
-                    {currentStep > step.id ? (
-                      <Check className="w-5 h-5" />
-                    ) : (
-                      <step.icon className="w-4 sm:w-5 h-4 sm:h-5" />
-                    )}
+                <div className={`flex flex-col items-center ${currentStep >= step.id ? 'text-[#D4AF37]' : ''}`} style={{ color: currentStep >= step.id ? '#D4AF37' : 'var(--foreground-muted)' }}>
+                  <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-all ${
+                    currentStep === step.id ? 'bg-[#D4AF37] text-black' : 
+                    currentStep > step.id ? 'bg-[#D4AF37]/20 text-[#D4AF37]' : ''
+                  }`} style={{ background: currentStep < step.id ? 'var(--card-bg)' : undefined }}>
+                    {currentStep > step.id ? <Check className="w-5 h-5" /> : <step.icon className="w-4 h-4" />}
                   </div>
-                  <span className="text-xs mt-2 font-body hidden sm:block">{step.title}</span>
+                  <span className="text-xs mt-2 font-body hidden md:block">{step.title}</span>
                 </div>
                 {i < STEPS.length - 1 && (
-                  <div className={`w-8 sm:w-20 h-0.5 mx-1 sm:mx-2 ${
-                    currentStep > step.id ? 'bg-[#D4AF37]' : 'bg-white/10'
-                  }`} />
+                  <div className={`w-6 sm:w-12 h-0.5 mx-1 ${currentStep > step.id ? 'bg-[#D4AF37]' : ''}`} style={{ background: currentStep <= step.id ? 'var(--border)' : undefined }} />
                 )}
               </div>
             ))}
@@ -293,45 +379,280 @@ export default function PlanTripPage() {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -20 }}
-              className="card-glass p-6 sm:p-8 md:p-10"
+              className="card-glass p-6 sm:p-8"
             >
-              {/* Step 1: Destinations */}
+              {/* Step 1: Customer Type */}
               {currentStep === 1 && (
-                <div className="space-y-6 sm:space-y-8">
+                <div className="space-y-6">
                   <div>
-                    <h2 className="font-heading text-2xl sm:text-3xl text-white mb-2">Where's your adventure?</h2>
-                    <p className="text-white/50 font-body text-sm sm:text-base">Tell us where you're starting from and where you want to go</p>
+                    <h2 className="font-heading text-2xl sm:text-3xl mb-2" style={{ color: 'var(--foreground)' }}>How can we help you?</h2>
+                    <p style={{ color: 'var(--foreground-muted)' }} className="font-body">Select what best describes your situation</p>
+                  </div>
+
+                  <RadioGroup value={customerType} onValueChange={setCustomerType} className="space-y-4">
+                    {[
+                      { value: 'fresh', icon: Sparkles, title: 'Plan Everything Fresh', desc: 'I need help with flights, hotels, and complete itinerary' },
+                      { value: 'partial', icon: Briefcase, title: 'Partial Booking', desc: 'I have some bookings (flight OR hotel) and need help with the rest' },
+                      { value: 'plan_only', icon: Calendar, title: 'Itinerary Only', desc: 'I have flights & hotels booked, just need day-wise planning' }
+                    ].map((type) => (
+                      <label
+                        key={type.value}
+                        className={`flex items-start gap-4 p-5 rounded-xl cursor-pointer transition-all ${customerType === type.value ? 'border-[#D4AF37]' : ''}`}
+                        style={{ 
+                          background: customerType === type.value ? 'rgba(212, 175, 55, 0.1)' : 'var(--card-bg)',
+                          border: `1px solid ${customerType === type.value ? '#D4AF37' : 'var(--border)'}`
+                        }}
+                      >
+                        <RadioGroupItem value={type.value} className="mt-1" />
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-1">
+                            <type.icon className="w-5 h-5 text-[#D4AF37]" />
+                            <span className="font-body font-medium" style={{ color: 'var(--foreground)' }}>{type.title}</span>
+                          </div>
+                          <p className="text-sm" style={{ color: 'var(--foreground-muted)' }}>{type.desc}</p>
+                        </div>
+                      </label>
+                    ))}
+                  </RadioGroup>
+
+                  {/* Existing Bookings Form */}
+                  {(customerType === 'partial' || customerType === 'plan_only') && (
+                    <div className="space-y-4 pt-4 border-t" style={{ borderColor: 'var(--border)' }}>
+                      <h3 className="font-heading text-lg" style={{ color: 'var(--foreground)' }}>Your Existing Bookings</h3>
+                      
+                      {/* Flight Booking */}
+                      <div className="space-y-3">
+                        <div className="flex items-center gap-2">
+                          <Checkbox 
+                            checked={existingBookings.hasFlight}
+                            onCheckedChange={(checked) => setExistingBookings({...existingBookings, hasFlight: checked})}
+                          />
+                          <label className="font-body text-sm" style={{ color: 'var(--foreground)' }}>I have booked my flights</label>
+                        </div>
+                        
+                        {existingBookings.hasFlight && (
+                          <div className="grid grid-cols-2 gap-3 pl-6">
+                            <div>
+                              <Label className="text-xs" style={{ color: 'var(--foreground-muted)' }}>Outbound Departure</Label>
+                              <Input 
+                                type="datetime-local"
+                                value={existingBookings.flightDetails.departureTime}
+                                onChange={(e) => setExistingBookings({
+                                  ...existingBookings,
+                                  flightDetails: {...existingBookings.flightDetails, departureTime: e.target.value}
+                                })}
+                                className="h-10"
+                                style={{ background: 'var(--input-bg)', borderColor: 'var(--border)' }}
+                              />
+                            </div>
+                            <div>
+                              <Label className="text-xs" style={{ color: 'var(--foreground-muted)' }}>Outbound Arrival</Label>
+                              <Input 
+                                type="datetime-local"
+                                value={existingBookings.flightDetails.arrivalTime}
+                                onChange={(e) => setExistingBookings({
+                                  ...existingBookings,
+                                  flightDetails: {...existingBookings.flightDetails, arrivalTime: e.target.value}
+                                })}
+                                className="h-10"
+                                style={{ background: 'var(--input-bg)', borderColor: 'var(--border)' }}
+                              />
+                            </div>
+                            <div>
+                              <Label className="text-xs" style={{ color: 'var(--foreground-muted)' }}>Return Departure</Label>
+                              <Input 
+                                type="datetime-local"
+                                value={existingBookings.flightDetails.returnDepartureTime}
+                                onChange={(e) => setExistingBookings({
+                                  ...existingBookings,
+                                  flightDetails: {...existingBookings.flightDetails, returnDepartureTime: e.target.value}
+                                })}
+                                className="h-10"
+                                style={{ background: 'var(--input-bg)', borderColor: 'var(--border)' }}
+                              />
+                            </div>
+                            <div>
+                              <Label className="text-xs" style={{ color: 'var(--foreground-muted)' }}>Return Arrival</Label>
+                              <Input 
+                                type="datetime-local"
+                                value={existingBookings.flightDetails.returnArrivalTime}
+                                onChange={(e) => setExistingBookings({
+                                  ...existingBookings,
+                                  flightDetails: {...existingBookings.flightDetails, returnArrivalTime: e.target.value}
+                                })}
+                                className="h-10"
+                                style={{ background: 'var(--input-bg)', borderColor: 'var(--border)' }}
+                              />
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Hotel Booking */}
+                      <div className="space-y-3">
+                        <div className="flex items-center gap-2">
+                          <Checkbox 
+                            checked={existingBookings.hasHotel}
+                            onCheckedChange={(checked) => setExistingBookings({...existingBookings, hasHotel: checked})}
+                          />
+                          <label className="font-body text-sm" style={{ color: 'var(--foreground)' }}>I have booked my accommodation</label>
+                        </div>
+                        
+                        {existingBookings.hasHotel && (
+                          <div className="grid grid-cols-2 gap-3 pl-6">
+                            <div className="col-span-2">
+                              <Label className="text-xs" style={{ color: 'var(--foreground-muted)' }}>Hotel/Accommodation Name</Label>
+                              <Input 
+                                value={existingBookings.hotelDetails.name}
+                                onChange={(e) => setExistingBookings({
+                                  ...existingBookings,
+                                  hotelDetails: {...existingBookings.hotelDetails, name: e.target.value}
+                                })}
+                                placeholder="e.g., Marriott Downtown"
+                                className="h-10"
+                                style={{ background: 'var(--input-bg)', borderColor: 'var(--border)' }}
+                              />
+                            </div>
+                            <div className="col-span-2">
+                              <Label className="text-xs" style={{ color: 'var(--foreground-muted)' }}>Address</Label>
+                              <Input 
+                                value={existingBookings.hotelDetails.address}
+                                onChange={(e) => setExistingBookings({
+                                  ...existingBookings,
+                                  hotelDetails: {...existingBookings.hotelDetails, address: e.target.value}
+                                })}
+                                placeholder="Hotel address"
+                                className="h-10"
+                                style={{ background: 'var(--input-bg)', borderColor: 'var(--border)' }}
+                              />
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Insurance */}
+                      <div className="flex items-center gap-2">
+                        <Checkbox 
+                          checked={existingBookings.hasInsurance}
+                          onCheckedChange={(checked) => setExistingBookings({...existingBookings, hasInsurance: checked})}
+                        />
+                        <label className="font-body text-sm" style={{ color: 'var(--foreground)' }}>I already have travel insurance</label>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Step 2: Passport & Visa */}
+              {currentStep === 2 && (
+                <div className="space-y-6">
+                  <div>
+                    <h2 className="font-heading text-2xl sm:text-3xl mb-2" style={{ color: 'var(--foreground)' }}>Your Passport(s)</h2>
+                    <p style={{ color: 'var(--foreground-muted)' }} className="font-body">Select all passport(s) you hold - this helps us check visa requirements</p>
+                  </div>
+
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                    {countries.map((country) => (
+                      <button
+                        key={country.code}
+                        onClick={() => togglePassport(country.code)}
+                        className={`p-3 rounded-xl text-left transition-all ${passportCountries.includes(country.code) ? 'border-[#D4AF37]' : ''}`}
+                        style={{ 
+                          background: passportCountries.includes(country.code) ? 'rgba(212, 175, 55, 0.1)' : 'var(--card-bg)',
+                          border: `1px solid ${passportCountries.includes(country.code) ? '#D4AF37' : 'var(--border)'}`
+                        }}
+                      >
+                        <span className="text-2xl">{country.flag}</span>
+                        <p className="text-sm mt-1 font-body truncate" style={{ color: 'var(--foreground)' }}>{country.name}</p>
+                        {passportCountries.includes(country.code) && (
+                          <Check className="w-4 h-4 text-[#D4AF37] mt-1" />
+                        )}
+                      </button>
+                    ))}
+                  </div>
+
+                  {passportCountries.length > 0 && (
+                    <div className="p-4 rounded-xl" style={{ background: 'rgba(212, 175, 55, 0.1)', border: '1px solid rgba(212, 175, 55, 0.2)' }}>
+                      <p className="text-[#D4AF37] font-body text-sm">
+                        Selected: {passportCountries.map(code => countries.find(c => c.code === code)?.name).join(', ')}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Step 3: Destinations */}
+              {currentStep === 3 && (
+                <div className="space-y-6">
+                  <div>
+                    <h2 className="font-heading text-2xl sm:text-3xl mb-2" style={{ color: 'var(--foreground)' }}>Where's your adventure?</h2>
+                    <p style={{ color: 'var(--foreground-muted)' }} className="font-body">Start typing to search cities</p>
                   </div>
 
                   <div className="space-y-4">
                     <div>
-                      <Label className="text-white/70 font-body mb-2 block">Departure City</Label>
+                      <Label style={{ color: 'var(--foreground-muted)' }} className="font-body mb-2 block">Departure City</Label>
                       <div className="relative">
-                        <Plane className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/30 z-10" />
-                        <CityAutocomplete
-                          value={departure}
-                          onChange={setDeparture}
-                          placeholder="e.g., New York, USA"
-                          testId="departure-input"
-                        />
+                        <Plane className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 z-10" style={{ color: 'var(--foreground-muted)' }} />
+                        <div className="pl-12">
+                          <CityAutocomplete
+                            value={departure}
+                            onChange={handleDepartureChange}
+                            placeholder="e.g., New York"
+                            testId="departure-input"
+                          />
+                        </div>
                       </div>
+                      
+                      {/* Airport Selection */}
+                      {departureAirports.length > 0 && (
+                        <div className="mt-3 pl-12">
+                          <Label className="text-xs mb-2 block" style={{ color: 'var(--foreground-muted)' }}>Search from these airports:</Label>
+                          <div className="flex flex-wrap gap-2">
+                            {departureAirports.map((airport) => (
+                              <Badge
+                                key={airport.code}
+                                variant={selectedDepartureAirports.includes(airport.code) ? "default" : "outline"}
+                                className="cursor-pointer"
+                                style={{
+                                  background: selectedDepartureAirports.includes(airport.code) ? '#D4AF37' : 'transparent',
+                                  color: selectedDepartureAirports.includes(airport.code) ? 'black' : 'var(--foreground-muted)',
+                                  borderColor: 'var(--border)'
+                                }}
+                                onClick={() => {
+                                  if (selectedDepartureAirports.includes(airport.code)) {
+                                    setSelectedDepartureAirports(selectedDepartureAirports.filter(a => a !== airport.code));
+                                  } else {
+                                    setSelectedDepartureAirports([...selectedDepartureAirports, airport.code]);
+                                  }
+                                }}
+                              >
+                                {airport.code} - {airport.name}
+                              </Badge>
+                            ))}
+                          </div>
+                        </div>
+                      )}
                     </div>
 
                     <div>
-                      <Label className="text-white/70 font-body mb-2 block">Destination(s)</Label>
+                      <Label style={{ color: 'var(--foreground-muted)' }} className="font-body mb-2 block">Destination(s)</Label>
                       {destinations.map((dest, i) => (
                         <div key={i} className="relative mb-3">
                           <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#D4AF37] z-10" />
-                          <CityAutocomplete
-                            value={dest}
-                            onChange={(val) => updateDestination(i, val)}
-                            placeholder={`Destination ${i + 1} (e.g., Paris, France)`}
-                            testId={`destination-input-${i}`}
-                          />
+                          <div className="pl-12 pr-12">
+                            <CityAutocomplete
+                              value={dest.city}
+                              onChange={(val, cityData) => updateDestination(i, val, cityData)}
+                              placeholder={`Destination ${i + 1}`}
+                              testId={`destination-input-${i}`}
+                            />
+                          </div>
                           {destinations.length > 1 && (
                             <button
                               onClick={() => removeDestination(i)}
-                              className="absolute right-4 top-1/2 -translate-y-1/2 text-white/30 hover:text-red-400 z-10"
+                              className="absolute right-4 top-1/2 -translate-y-1/2 hover:text-red-400 z-10"
+                              style={{ color: 'var(--foreground-muted)' }}
                             >
                               <X className="w-5 h-5" />
                             </button>
@@ -355,62 +676,60 @@ export default function PlanTripPage() {
                 </div>
               )}
 
-              {/* Step 2: Dates */}
-              {currentStep === 2 && (
-                <div className="space-y-6 sm:space-y-8">
+              {/* Step 4: Dates */}
+              {currentStep === 4 && (
+                <div className="space-y-6">
                   <div>
-                    <h2 className="font-heading text-2xl sm:text-3xl text-white mb-2">When are you traveling?</h2>
-                    <p className="text-white/50 font-body text-sm sm:text-base">Select your travel dates</p>
+                    <h2 className="font-heading text-2xl sm:text-3xl mb-2" style={{ color: 'var(--foreground)' }}>When are you traveling?</h2>
+                    <p style={{ color: 'var(--foreground-muted)' }} className="font-body">Select your travel dates</p>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <Label className="text-white/70 font-body mb-2 block">Start Date</Label>
+                      <Label style={{ color: 'var(--foreground-muted)' }} className="font-body mb-2 block">Start Date</Label>
                       <Popover>
                         <PopoverTrigger asChild>
                           <Button
                             variant="outline"
-                            className="w-full h-12 sm:h-14 justify-start text-left font-normal bg-white/5 border-white/10 text-white hover:bg-white/10"
-                            data-testid="start-date-btn"
+                            className="w-full h-14 justify-start text-left font-normal"
+                            style={{ background: 'var(--input-bg)', borderColor: 'var(--border)', color: 'var(--foreground)' }}
                           >
                             <Calendar className="mr-3 h-5 w-5 text-[#D4AF37]" />
-                            {startDate ? format(startDate, 'PPP') : <span className="text-white/30">Pick a date</span>}
+                            {startDate ? format(startDate, 'PPP') : <span style={{ color: 'var(--foreground-muted)' }}>Pick a date</span>}
                           </Button>
                         </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0 bg-[#0A0A0A] border-white/10" align="start">
+                        <PopoverContent className="w-auto p-0" style={{ background: 'var(--background-secondary)', borderColor: 'var(--border)' }}>
                           <CalendarComponent
                             mode="single"
                             selected={startDate}
                             onSelect={setStartDate}
                             disabled={(date) => date < new Date()}
                             initialFocus
-                            className="bg-[#0A0A0A]"
                           />
                         </PopoverContent>
                       </Popover>
                     </div>
 
                     <div>
-                      <Label className="text-white/70 font-body mb-2 block">End Date</Label>
+                      <Label style={{ color: 'var(--foreground-muted)' }} className="font-body mb-2 block">End Date</Label>
                       <Popover>
                         <PopoverTrigger asChild>
                           <Button
                             variant="outline"
-                            className="w-full h-12 sm:h-14 justify-start text-left font-normal bg-white/5 border-white/10 text-white hover:bg-white/10"
-                            data-testid="end-date-btn"
+                            className="w-full h-14 justify-start text-left font-normal"
+                            style={{ background: 'var(--input-bg)', borderColor: 'var(--border)', color: 'var(--foreground)' }}
                           >
                             <Calendar className="mr-3 h-5 w-5 text-[#D4AF37]" />
-                            {endDate ? format(endDate, 'PPP') : <span className="text-white/30">Pick a date</span>}
+                            {endDate ? format(endDate, 'PPP') : <span style={{ color: 'var(--foreground-muted)' }}>Pick a date</span>}
                           </Button>
                         </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0 bg-[#0A0A0A] border-white/10" align="start">
+                        <PopoverContent className="w-auto p-0" style={{ background: 'var(--background-secondary)', borderColor: 'var(--border)' }}>
                           <CalendarComponent
                             mode="single"
                             selected={endDate}
                             onSelect={setEndDate}
                             disabled={(date) => date < (startDate || new Date())}
                             initialFocus
-                            className="bg-[#0A0A0A]"
                           />
                         </PopoverContent>
                       </Popover>
@@ -418,7 +737,7 @@ export default function PlanTripPage() {
                   </div>
 
                   {tripDays > 0 && (
-                    <div className="p-4 rounded-xl bg-[#D4AF37]/10 border border-[#D4AF37]/20">
+                    <div className="p-4 rounded-xl" style={{ background: 'rgba(212, 175, 55, 0.1)', border: '1px solid rgba(212, 175, 55, 0.2)' }}>
                       <p className="text-[#D4AF37] font-body text-center">
                         <span className="font-heading text-2xl">{tripDays}</span> {tripDays === 1 ? 'day' : 'days'} adventure
                       </p>
@@ -427,48 +746,46 @@ export default function PlanTripPage() {
                 </div>
               )}
 
-              {/* Step 3: Travelers & Budget */}
-              {currentStep === 3 && (
-                <div className="space-y-6 sm:space-y-8">
+              {/* Step 5: Travelers & Budget */}
+              {currentStep === 5 && (
+                <div className="space-y-6">
                   <div>
-                    <h2 className="font-heading text-2xl sm:text-3xl text-white mb-2">Who's traveling?</h2>
-                    <p className="text-white/50 font-body text-sm sm:text-base">Tell us about your travel group and budget</p>
+                    <h2 className="font-heading text-2xl sm:text-3xl mb-2" style={{ color: 'var(--foreground)' }}>Who's traveling?</h2>
+                    <p style={{ color: 'var(--foreground-muted)' }} className="font-body">Tell us about your travel group and budget</p>
                   </div>
 
-                  <div className="space-y-3 sm:space-y-4">
+                  <div className="space-y-3">
                     {[
-                      { key: 'adults', label: 'Adults (18+)', icon: User },
+                      { key: 'adults', label: 'Adults (18-59)', icon: User },
                       { key: 'seniors', label: 'Seniors (60+)', icon: UserCheck },
                       { key: 'children_above_10', label: 'Children (10-17)', icon: Users },
                       { key: 'children_below_10', label: 'Children (2-9)', icon: User },
                       { key: 'infants', label: 'Infants (0-1)', icon: Baby }
                     ].map(({ key, label, icon: Icon }) => (
-                      <div key={key} className="flex items-center justify-between p-3 sm:p-4 rounded-xl bg-white/5 border border-white/10">
-                        <div className="flex items-center gap-2 sm:gap-3">
-                          <Icon className="w-4 sm:w-5 h-4 sm:h-5 text-[#D4AF37]" />
-                          <span className="text-white font-body text-sm sm:text-base">{label}</span>
+                      <div key={key} className="flex items-center justify-between p-4 rounded-xl" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
+                        <div className="flex items-center gap-3">
+                          <Icon className="w-5 h-5 text-[#D4AF37]" />
+                          <span className="font-body" style={{ color: 'var(--foreground)' }}>{label}</span>
                         </div>
-                        <div className="flex items-center gap-2 sm:gap-3">
+                        <div className="flex items-center gap-3">
                           <Button
                             type="button"
                             variant="outline"
                             size="icon"
-                            className="w-8 sm:w-10 h-8 sm:h-10 rounded-full border-white/20 text-white hover:bg-white/10"
+                            className="w-10 h-10 rounded-full"
+                            style={{ borderColor: 'var(--border)' }}
                             onClick={() => setTravelers({ ...travelers, [key]: Math.max(0, travelers[key] - 1) })}
-                            data-testid={`${key}-minus-btn`}
                           >
                             -
                           </Button>
-                          <span className="w-6 sm:w-8 text-center text-white font-heading text-lg sm:text-xl" data-testid={`${key}-count`}>
-                            {travelers[key]}
-                          </span>
+                          <span className="w-8 text-center font-heading text-xl" style={{ color: 'var(--foreground)' }}>{travelers[key]}</span>
                           <Button
                             type="button"
                             variant="outline"
                             size="icon"
-                            className="w-8 sm:w-10 h-8 sm:h-10 rounded-full border-white/20 text-white hover:bg-white/10"
+                            className="w-10 h-10 rounded-full"
+                            style={{ borderColor: 'var(--border)' }}
                             onClick={() => setTravelers({ ...travelers, [key]: travelers[key] + 1 })}
-                            data-testid={`${key}-plus-btn`}
                           >
                             +
                           </Button>
@@ -477,150 +794,161 @@ export default function PlanTripPage() {
                     ))}
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 pt-4 sm:pt-6 border-t border-white/10">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t" style={{ borderColor: 'var(--border)' }}>
                     <div>
-                      <Label className="text-white/70 font-body mb-2 block">Total Budget</Label>
-                      <div className="relative">
-                        <DollarSign className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-[#D4AF37]" />
-                        <Input
-                          type="number"
-                          value={budget}
-                          onChange={(e) => setBudget(e.target.value)}
-                          placeholder="5000"
-                          className="pl-12 h-12 sm:h-14 bg-white/5 border-white/10 text-white placeholder:text-white/30 focus:border-[#D4AF37]/50"
-                          data-testid="budget-input"
-                        />
-                      </div>
+                      <Label style={{ color: 'var(--foreground-muted)' }} className="font-body mb-2 block">Total Budget ({getSymbol()})</Label>
+                      <Input
+                        type="number"
+                        value={budget}
+                        onChange={(e) => setBudget(e.target.value)}
+                        placeholder="5000"
+                        className="h-14"
+                        style={{ background: 'var(--input-bg)', borderColor: 'var(--border)', color: 'var(--foreground)' }}
+                      />
                     </div>
                     <div>
-                      <Label className="text-white/70 font-body mb-2 block">Currency</Label>
-                      <Select value={currency} onValueChange={setCurrency}>
-                        <SelectTrigger className="h-12 sm:h-14 bg-white/5 border-white/10 text-white" data-testid="currency-select">
+                      <Label style={{ color: 'var(--foreground-muted)' }} className="font-body mb-2 block">Cabin Class</Label>
+                      <Select value={cabinClass} onValueChange={setCabinClass}>
+                        <SelectTrigger className="h-14" style={{ background: 'var(--input-bg)', borderColor: 'var(--border)' }}>
                           <SelectValue />
                         </SelectTrigger>
-                        <SelectContent className="bg-[#0A0A0A] border-white/10 max-h-60">
-                          {currencies.map((curr) => (
-                            <SelectItem key={curr.code} value={curr.code}>
-                              {curr.symbol} {curr.code} - {curr.name}
-                            </SelectItem>
-                          ))}
+                        <SelectContent style={{ background: 'var(--background-secondary)' }}>
+                          <SelectItem value="economy">Economy</SelectItem>
+                          <SelectItem value="premium_economy">Premium Economy</SelectItem>
+                          <SelectItem value="business">Business</SelectItem>
+                          <SelectItem value="first">First Class</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
                   </div>
 
                   {totalTravelers > 0 && budget > 0 && (
-                    <div className="p-4 rounded-xl bg-[#D4AF37]/10 border border-[#D4AF37]/20">
+                    <div className="p-4 rounded-xl" style={{ background: 'rgba(212, 175, 55, 0.1)', border: '1px solid rgba(212, 175, 55, 0.2)' }}>
                       <p className="text-[#D4AF37] font-body text-center">
-                        ~{getCurrencySymbol(currency)} {Math.round(budget / totalTravelers).toLocaleString()} per person
+                        ~{formatPrice(budget / totalTravelers)} per person
                       </p>
                     </div>
                   )}
                 </div>
               )}
 
-              {/* Step 4: Preferences */}
-              {currentStep === 4 && (
-                <div className="space-y-6 sm:space-y-8">
+              {/* Step 6: Preferences */}
+              {currentStep === 6 && (
+                <div className="space-y-6">
                   <div>
-                    <h2 className="font-heading text-2xl sm:text-3xl text-white mb-2">Personalize your trip</h2>
-                    <p className="text-white/50 font-body text-sm sm:text-base">Help us tailor recommendations to your preferences</p>
+                    <h2 className="font-heading text-2xl sm:text-3xl mb-2" style={{ color: 'var(--foreground)' }}>Personalize your trip</h2>
+                    <p style={{ color: 'var(--foreground-muted)' }} className="font-body">Help us tailor recommendations to your preferences</p>
                   </div>
 
-                  <div>
-                    <Label className="text-white/70 font-body mb-3 block">Food Preferences</Label>
-                    <Select value={foodPreference} onValueChange={setFoodPreference}>
-                      <SelectTrigger className="h-12 sm:h-14 bg-white/5 border-white/10 text-white" data-testid="food-preference-select">
-                        <div className="flex items-center gap-3">
-                          <Utensils className="w-5 h-5 text-[#D4AF37]" />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label style={{ color: 'var(--foreground-muted)' }} className="font-body mb-2 block">Food Preferences</Label>
+                      <Select value={foodPreference} onValueChange={setFoodPreference}>
+                        <SelectTrigger className="h-12" style={{ background: 'var(--input-bg)', borderColor: 'var(--border)' }}>
                           <SelectValue />
-                        </div>
-                      </SelectTrigger>
-                      <SelectContent className="bg-[#0A0A0A] border-white/10">
-                        <SelectItem value="No preference">No preference</SelectItem>
-                        <SelectItem value="Vegetarian">Vegetarian</SelectItem>
-                        <SelectItem value="Vegan">Vegan</SelectItem>
-                        <SelectItem value="Halal">Halal</SelectItem>
-                        <SelectItem value="Kosher">Kosher</SelectItem>
-                        <SelectItem value="Gluten-free">Gluten-free</SelectItem>
-                        <SelectItem value="Pescatarian">Pescatarian</SelectItem>
-                        <SelectItem value="Local cuisine">Local cuisine focus</SelectItem>
-                        <SelectItem value="Street food">Street food lover</SelectItem>
-                        <SelectItem value="Fine dining">Fine dining</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
+                        </SelectTrigger>
+                        <SelectContent style={{ background: 'var(--background-secondary)' }}>
+                          {["No preference", "Vegetarian", "Vegan", "Halal", "Kosher", "Gluten-free", "Local cuisine", "Street food", "Fine dining"].map(opt => (
+                            <SelectItem key={opt} value={opt}>{opt}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
 
-                  <div>
-                    <Label className="text-white/70 font-body mb-3 block">Accommodation Type</Label>
-                    <Select value={accommodationType} onValueChange={setAccommodationType}>
-                      <SelectTrigger className="h-12 sm:h-14 bg-white/5 border-white/10 text-white" data-testid="accommodation-select">
-                        <div className="flex items-center gap-3">
-                          <Home className="w-5 h-5 text-[#D4AF37]" />
+                    <div>
+                      <Label style={{ color: 'var(--foreground-muted)' }} className="font-body mb-2 block">Accommodation Type</Label>
+                      <Select value={accommodationType} onValueChange={setAccommodationType}>
+                        <SelectTrigger className="h-12" style={{ background: 'var(--input-bg)', borderColor: 'var(--border)' }}>
                           <SelectValue />
-                        </div>
-                      </SelectTrigger>
-                      <SelectContent className="bg-[#0A0A0A] border-white/10">
-                        <SelectItem value="budget">Budget (Hostels, Budget Hotels)</SelectItem>
-                        <SelectItem value="mid-range">Mid-Range (3-4 Star Hotels)</SelectItem>
-                        <SelectItem value="luxury">Luxury (5 Star Hotels, Resorts)</SelectItem>
-                        <SelectItem value="boutique">Boutique Hotels</SelectItem>
-                        <SelectItem value="vacation-rental">Vacation Rentals (Airbnb)</SelectItem>
-                        <SelectItem value="eco-friendly">Eco-Friendly / Sustainable</SelectItem>
-                        <SelectItem value="unique">Unique Stays (Treehouses, Igloos)</SelectItem>
-                      </SelectContent>
-                    </Select>
+                        </SelectTrigger>
+                        <SelectContent style={{ background: 'var(--background-secondary)' }}>
+                          {["budget", "mid-range", "luxury", "boutique", "vacation-rental", "eco-friendly", "unique"].map(opt => (
+                            <SelectItem key={opt} value={opt}>{opt.charAt(0).toUpperCase() + opt.slice(1).replace('-', ' ')}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </div>
 
                   <div>
-                    <Label className="text-white/70 font-body mb-3 block">
-                      Interests (select up to 5)
-                    </Label>
+                    <Label style={{ color: 'var(--foreground-muted)' }} className="font-body mb-3 block">Interests (select up to 5)</Label>
                     <div className="flex flex-wrap gap-2">
                       {INTERESTS.map((interest) => (
                         <Badge
                           key={interest}
-                          variant={interests.includes(interest) ? "default" : "outline"}
-                          className={`cursor-pointer py-2 px-3 sm:px-4 text-xs sm:text-sm transition-all ${
-                            interests.includes(interest) 
-                              ? 'bg-[#D4AF37] text-black hover:bg-[#E5C568] border-[#D4AF37]' 
-                              : 'bg-transparent border-white/20 text-white/70 hover:border-[#D4AF37]/50 hover:text-[#D4AF37]'
-                          }`}
+                          className="cursor-pointer py-2 px-4 text-sm transition-all"
+                          style={{
+                            background: interests.includes(interest) ? '#D4AF37' : 'transparent',
+                            color: interests.includes(interest) ? 'black' : 'var(--foreground-muted)',
+                            border: `1px solid ${interests.includes(interest) ? '#D4AF37' : 'var(--border)'}`
+                          }}
                           onClick={() => toggleInterest(interest)}
-                          data-testid={`interest-${interest.toLowerCase().replace(/ /g, '-')}`}
                         >
                           {interest}
                         </Badge>
                       ))}
                     </div>
                   </div>
+
+                  <div>
+                    <Label style={{ color: 'var(--foreground-muted)' }} className="font-body mb-3 block flex items-center gap-2">
+                      <Dumbbell className="w-4 h-4 text-[#D4AF37]" />
+                      Fitness Interests
+                    </Label>
+                    <div className="flex flex-wrap gap-2">
+                      {FITNESS_OPTIONS.map((fitness) => (
+                        <Badge
+                          key={fitness}
+                          className="cursor-pointer py-2 px-4 text-sm transition-all"
+                          style={{
+                            background: fitnessInterests.includes(fitness) ? '#D4AF37' : 'transparent',
+                            color: fitnessInterests.includes(fitness) ? 'black' : 'var(--foreground-muted)',
+                            border: `1px solid ${fitnessInterests.includes(fitness) ? '#D4AF37' : 'var(--border)'}`
+                          }}
+                          onClick={() => toggleFitness(fitness)}
+                        >
+                          {fitness}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+
+                  {!existingBookings.hasInsurance && (
+                    <div className="flex items-center gap-3 p-4 rounded-xl" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
+                      <Checkbox 
+                        checked={needInsurance}
+                        onCheckedChange={setNeedInsurance}
+                      />
+                      <div>
+                        <label className="font-body" style={{ color: 'var(--foreground)' }}>Suggest travel insurance options</label>
+                        <p className="text-xs" style={{ color: 'var(--foreground-muted)' }}>We'll recommend the best & cheapest options for your trip</p>
+                      </div>
+                      <Shield className="w-5 h-5 text-[#D4AF37] ml-auto" />
+                    </div>
+                  )}
                 </div>
               )}
 
               {/* Navigation Buttons */}
-              <div className="flex items-center justify-between mt-8 sm:mt-10 pt-6 sm:pt-8 border-t border-white/10">
+              <div className="flex items-center justify-between mt-8 pt-6 border-t" style={{ borderColor: 'var(--border)' }}>
                 {currentStep > 1 ? (
                   <Button
                     type="button"
                     variant="ghost"
                     onClick={() => setCurrentStep(currentStep - 1)}
-                    className="text-white/70 hover:text-white"
-                    data-testid="prev-step-btn"
+                    style={{ color: 'var(--foreground-muted)' }}
                   >
                     <ArrowLeft className="w-4 h-4 mr-2" />
                     Back
                   </Button>
-                ) : (
-                  <div />
-                )}
+                ) : <div />}
 
-                {currentStep < 4 ? (
+                {currentStep < 6 ? (
                   <Button
                     type="button"
                     onClick={() => setCurrentStep(currentStep + 1)}
                     disabled={!canProceed()}
-                    className="bg-[#D4AF37] text-black hover:bg-[#E5C568] rounded-full px-6 sm:px-8"
-                    data-testid="next-step-btn"
+                    className="bg-[#D4AF37] text-black hover:bg-[#E5C568] rounded-full px-8"
                   >
                     Continue
                     <ArrowRight className="w-4 h-4 ml-2" />
@@ -630,8 +958,7 @@ export default function PlanTripPage() {
                     type="button"
                     onClick={handleSubmit}
                     disabled={loading}
-                    className="bg-[#D4AF37] text-black hover:bg-[#E5C568] rounded-full px-6 sm:px-8"
-                    data-testid="generate-trip-btn"
+                    className="bg-[#D4AF37] text-black hover:bg-[#E5C568] rounded-full px-8"
                   >
                     {loading ? (
                       <>
