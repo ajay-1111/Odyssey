@@ -132,16 +132,24 @@ export default function TripResultPage() {
           </Link>
           
           <div className="flex items-center gap-3">
-            <button onClick={toggleTheme} className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: 'var(--card-bg)' }}>
+            <Select value={currency} onValueChange={setCurrency}>
+              <SelectTrigger className="w-24 h-10 rounded-xl" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }} data-testid="currency-selector-result">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent className="rounded-xl" style={{ background: 'var(--background-secondary)' }}>
+                {currencies.map(c => <SelectItem key={c.code} value={c.code}>{c.code} {c.symbol}</SelectItem>)}
+              </SelectContent>
+            </Select>
+            <button onClick={toggleTheme} className="w-10 h-10 rounded-xl flex items-center justify-center transition-all hover:scale-110" style={{ background: 'var(--card-bg)' }}>
               {theme === 'dark' ? <Sun className="w-5 h-5 text-amber-400" /> : <Moon className="w-5 h-5 text-violet-500" />}
             </button>
-            <Button onClick={() => navigate('/plan')} variant="outline" className="rounded-xl" style={{ borderColor: 'var(--border)', color: 'var(--foreground)' }} data-testid="plan-another-btn">
+            <Button onClick={() => navigate('/plan')} variant="outline" className="rounded-xl transition-all hover:scale-105" style={{ borderColor: 'var(--border)', color: 'var(--foreground)' }} data-testid="plan-another-btn">
               <ArrowLeft className="w-4 h-4 mr-2" /> Plan Another
             </Button>
-            <button onClick={handleSaveTrip} disabled={saving} className="btn-gradient" data-testid="save-trip-btn">
+            <button onClick={handleSaveTrip} disabled={saving} className="btn-gradient btn-press" data-testid="save-trip-btn">
               {saving ? <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> : <><Save className="w-4 h-4 mr-2 inline" /> Save Trip</>}
             </button>
-            <button onClick={handleSendEmail} disabled={sendingEmail || !user} className="btn-outline-modern hidden sm:flex items-center gap-2" data-testid="email-trip-btn">
+            <button onClick={handleSendEmail} disabled={sendingEmail || !user} className="btn-outline-modern hidden sm:flex items-center gap-2 transition-all hover:scale-105" data-testid="email-trip-btn">
               {sendingEmail ? <div className="w-4 h-4 border-2 border-violet-500 border-t-transparent rounded-full animate-spin" /> : <><Mail className="w-4 h-4" /> Email</>}
             </button>
           </div>
