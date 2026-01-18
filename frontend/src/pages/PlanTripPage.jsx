@@ -46,13 +46,16 @@ const CityAutocomplete = ({ value, onChange, placeholder, testId }) => {
   const [suggestions, setSuggestions] = useState([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const inputRef = useRef(null);
+  const prevValueRef = useRef(value);
 
-  // Sync query with external value prop
-  useEffect(() => {
-    if (value !== undefined && value !== query) {
-      setQuery(value || '');
+  // Sync query with external value prop - using ref to avoid effect dependency issues
+  if (prevValueRef.current !== value) {
+    prevValueRef.current = value;
+    if (query !== (value || '')) {
+      // This is safe to call during render for prop sync
+      setTimeout(() => setQuery(value || ''), 0);
     }
-  }, [value]);
+  }
 
   const fetchSuggestions = async (q) => {
     if (q.length < 2) { setSuggestions([]); return; }
