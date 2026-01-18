@@ -8,6 +8,8 @@ import TripResultPage from "./pages/TripResultPage";
 import DashboardPage from "./pages/DashboardPage";
 import TripDetailPage from "./pages/TripDetailPage";
 import { AuthProvider, useAuth } from "./context/AuthContext";
+import { ThemeProvider } from "./context/ThemeContext";
+import { CurrencyProvider } from "./context/CurrencyContext";
 import "./App.css";
 
 const ProtectedRoute = ({ children }) => {
@@ -15,7 +17,7 @@ const ProtectedRoute = ({ children }) => {
   
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#050505] flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--background)' }}>
         <div className="w-8 h-8 border-2 border-[#D4AF37] border-t-transparent rounded-full animate-spin"></div>
       </div>
     );
@@ -52,12 +54,16 @@ function AppRoutes() {
 
 function App() {
   return (
-    <AuthProvider>
-      <BrowserRouter>
-        <AppRoutes />
-        <Toaster position="top-right" richColors />
-      </BrowserRouter>
-    </AuthProvider>
+    <ThemeProvider>
+      <CurrencyProvider>
+        <AuthProvider>
+          <BrowserRouter>
+            <AppRoutes />
+            <Toaster position="top-right" richColors />
+          </BrowserRouter>
+        </AuthProvider>
+      </CurrencyProvider>
+    </ThemeProvider>
   );
 }
 
