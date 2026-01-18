@@ -14,13 +14,24 @@ Build a breathtaking, responsive travel planning website with unique UI/UX that 
 - **Animated Backgrounds**: Gradient orbs with smooth floating animations
 - **Glass Morphism**: Modern card effects with backdrop blur
 - **Responsive Design**: Mobile-first, works on all devices
+- **Global Transitions**: Smooth animations on all interactive elements
+
+### UI/UX Fixes (Latest - Jan 18, 2025) ✅
+- **Fixed Icon Overlap**: Login/Register page icons properly positioned with pl-12 padding
+- **Passport Search Bar**: Added search filter for 60+ countries
+- **Residence Country Field**: Separate field for current country of residence (may differ from passport)
+- **Currency Selector on All Pages**: Landing, Plan, Dashboard, Trip Result pages all have currency selector
+- **Currency Persistence**: Currency choice saved in localStorage, syncs across all pages
+- **Unlimited Interests**: Removed 5-item limit on tourist attraction/interest selection
+- **Responsive Date Controls**: Mobile-friendly date pickers with larger tap targets
+- **Enhanced Transitions**: Added global CSS transitions, scale-hover, btn-press effects
 
 ### Core Trip Planning Features ✅
 - **3 Customer Flows**:
   - Plan Everything Fresh - Full trip planning
   - Partial Booking - Have some bookings, need help with rest
   - Itinerary Only - Already booked flights/hotels, just need day plans
-- **6-Step Planning Wizard**: Trip Type → Passport → Destinations → Dates → Travelers → Preferences
+- **6-Step Planning Wizard**: Trip Type → Passport/Residence → Destinations → Dates → Travelers → Preferences
 - **60+ Countries** for passport selection with visa requirements
 - **City Autocomplete** with airport information (e.g., New York shows JFK, EWR, LGA)
 - **Multi-destination Support**: Up to 5 destinations per trip
@@ -99,23 +110,23 @@ Build a breathtaking, responsive travel planning website with unique UI/UX that 
 ├── frontend/
 │   ├── src/
 │   │   ├── pages/
-│   │   │   ├── LandingPage.jsx
-│   │   │   ├── PlanTripPage.jsx
-│   │   │   ├── TripResultPage.jsx
-│   │   │   ├── LoginPage.jsx
-│   │   │   ├── RegisterPage.jsx
-│   │   │   ├── DashboardPage.jsx
+│   │   │   ├── LandingPage.jsx      # Hero, features, about, contact
+│   │   │   ├── PlanTripPage.jsx     # 6-step wizard with search bars
+│   │   │   ├── TripResultPage.jsx   # Trip details with tabs
+│   │   │   ├── LoginPage.jsx        # Fixed icon spacing
+│   │   │   ├── RegisterPage.jsx     # Fixed icon spacing
+│   │   │   ├── DashboardPage.jsx    # Currency selector added
 │   │   │   └── TripDetailPage.jsx
 │   │   ├── context/
 │   │   │   ├── AuthContext.js
 │   │   │   ├── ThemeContext.js
-│   │   │   └── CurrencyContext.js
-│   │   ├── index.css        # Theme variables & animations
+│   │   │   └── CurrencyContext.js   # localStorage persistence
+│   │   ├── index.css                # Global transitions & animations
 │   │   └── App.js
 │   ├── package.json
 │   └── .env
 ├── tests/
-│   └── test_odyssey_backend.py  # 31 API tests
+│   └── test_odyssey_backend.py      # 31 API tests
 └── memory/
     └── PRD.md
 ```
@@ -123,7 +134,17 @@ Build a breathtaking, responsive travel planning website with unique UI/UX that 
 ## Test Coverage
 - **31 Backend Tests** - All passing
 - Test file: `/app/tests/test_odyssey_backend.py`
-- Report: `/app/test_reports/iteration_4.json`
+- Reports: `/app/test_reports/iteration_*.json`
+
+## Completed Items (This Session)
+1. ✅ Fixed icon overlap on Login/Register pages
+2. ✅ Added search bar for passport country selection
+3. ✅ Added residence country field (separate from passport)
+4. ✅ Currency selector added to all pages (Landing, Plan, Dashboard, Result)
+5. ✅ Currency persists via localStorage
+6. ✅ Removed 5-item limit on interests selection
+7. ✅ Improved date controls responsiveness
+8. ✅ Added global transition effects
 
 ## Next Action Items (Backlog)
 1. **Payment Gateway Integration** - Stripe for premium features
