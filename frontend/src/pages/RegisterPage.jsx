@@ -6,6 +6,7 @@ import { Label } from '../components/ui/label';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { toast } from 'sonner';
+import { getErrorMessage } from '../utils/errorHandler';
 
 export default function RegisterPage() {
   const navigate = useNavigate();
@@ -45,7 +46,7 @@ export default function RegisterPage() {
       toast.success('Welcome to Odyssey!');
       navigate('/dashboard');
     } catch (error) {
-      toast.error(error.response?.data?.detail || 'Registration failed');
+      toast.error(getErrorMessage(error, 'Registration failed'));
     } finally {
       setLoading(false);
     }
