@@ -371,7 +371,7 @@ export default function PlanTripPage() {
               {currentStep === 3 && (
                 <div className="space-y-6">
                   <div>
-                    <h2 className="font-heading text-3xl font-bold mb-2" style={{ color: 'var(--foreground)' }}>Where's your adventure?</h2>
+                    <h2 className="font-heading text-3xl font-bold mb-2" style={{ color: 'var(--foreground)' }}>Where&apos;s your adventure?</h2>
                     <p style={{ color: 'var(--foreground-muted)' }}>Start typing to search cities with airports</p>
                   </div>
                   <div className="space-y-4">
@@ -459,7 +459,7 @@ export default function PlanTripPage() {
               {currentStep === 5 && (
                 <div className="space-y-6">
                   <div>
-                    <h2 className="font-heading text-3xl font-bold mb-2" style={{ color: 'var(--foreground)' }}>Who's traveling?</h2>
+                    <h2 className="font-heading text-3xl font-bold mb-2" style={{ color: 'var(--foreground)' }}>Who&apos;s traveling?</h2>
                     <p style={{ color: 'var(--foreground-muted)' }}>Tell us about your group</p>
                   </div>
                   <div className="space-y-3">
@@ -562,7 +562,7 @@ export default function PlanTripPage() {
                       <Shield className="w-6 h-6 text-violet-500" />
                       <div>
                         <span className="font-medium" style={{ color: 'var(--foreground)' }}>Suggest travel insurance</span>
-                        <p className="text-sm" style={{ color: 'var(--foreground-muted)' }}>We'll recommend the best options</p>
+                        <p className="text-sm" style={{ color: 'var(--foreground-muted)' }}>We&apos;ll recommend the best options</p>
                       </div>
                     </label>
                   )}
