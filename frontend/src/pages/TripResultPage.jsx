@@ -81,7 +81,7 @@ export default function TripResultPage() {
         setTrip(prev => ({ ...prev, id: response.data.trip_id }));
       }
     } catch (error) {
-      toast.error('Failed to save trip');
+      toast.error(getErrorMessage(error, 'Failed to save trip'));
     } finally {
       setSaving(false);
     }
@@ -104,7 +104,7 @@ export default function TripResultPage() {
       });
       toast.success('Trip sent to your email!');
     } catch (error) {
-      toast.error('Failed to send email');
+      toast.error(getErrorMessage(error, 'Failed to send email'));
     } finally {
       setSendingEmail(false);
     }
