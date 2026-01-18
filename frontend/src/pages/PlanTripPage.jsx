@@ -18,6 +18,7 @@ import { useTheme } from '../context/ThemeContext';
 import { useCurrency } from '../context/CurrencyContext';
 import axios from 'axios';
 import { toast } from 'sonner';
+import { getErrorMessage } from '../utils/errorHandler';
 
 const API_URL = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
@@ -232,7 +233,7 @@ export default function PlanTripPage() {
       toast.success('Trip generated successfully!');
       navigate('/trip-result');
     } catch (error) {
-      toast.error(error.response?.data?.detail || 'Failed to generate trip. Please try again.');
+      toast.error(getErrorMessage(error, 'Failed to generate trip. Please try again.'));
     } finally {
       setLoading(false);
     }
