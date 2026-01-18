@@ -7,11 +7,12 @@ import {
   Car, Train, Bus, Clock, Star, ChevronDown, ChevronUp,
   AlertCircle, Check, Globe, FileText, Home, Mail, 
   Footprints, Bike, Ship, Shield, Dumbbell, Luggage, Moon,
-  Thermometer, Droplets, CheckCircle
+  Thermometer, Droplets, CheckCircle, Sparkles
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { useCurrency } from '../context/CurrencyContext';
@@ -42,7 +43,7 @@ export default function TripResultPage() {
   const navigate = useNavigate();
   const { user, getAuthHeader } = useAuth();
   const { theme, toggleTheme } = useTheme();
-  const { currency, formatPrice, getSymbol } = useCurrency();
+  const { currency, setCurrency, currencies, formatPrice, getSymbol } = useCurrency();
   const [trip, setTrip] = useState(null);
   const [expandedDays, setExpandedDays] = useState({});
   const [saving, setSaving] = useState(false);
