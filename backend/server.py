@@ -288,7 +288,7 @@ Make the itinerary realistic, detailed, and within budget. Include actual popula
             api_key=api_key,
             session_id=str(uuid.uuid4()),
             system_message="You are an expert travel planner. Always respond with valid JSON only."
-        ).with_model("openai", "gpt-5.2")
+        ).with_model("openai", "gpt-5.1")
         
         response = await chat.send_message(UserMessage(text=prompt))
         
