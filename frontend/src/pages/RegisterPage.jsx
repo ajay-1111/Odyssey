@@ -1,33 +1,34 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Plane, Mail, Lock, User, Eye, EyeOff, ArrowRight, Check } from 'lucide-react';
+import { Plane, Mail, Lock, User, Eye, EyeOff, ArrowRight, Check, Sun, Moon } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
 import { toast } from 'sonner';
 
 export default function RegisterPage() {
   const navigate = useNavigate();
   const { register, user } = useAuth();
+  const { theme, toggleTheme } = useTheme();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  // Redirect if already logged in
   if (user) {
     navigate('/dashboard');
     return null;
   }
 
   const passwordStrength = () => {
-    if (password.length === 0) return { text: '', color: '' };
-    if (password.length < 6) return { text: 'Weak', color: 'text-red-500' };
-    if (password.length < 10) return { text: 'Fair', color: 'text-yellow-500' };
-    return { text: 'Strong', color: 'text-green-500' };
+    if (password.length === 0) return { text: '', color: '', width: '0%' };
+    if (password.length < 6) return { text: 'Weak', color: 'text-red-500', width: '33%', bg: 'bg-red-500' };
+    if (password.length < 10) return { text: 'Fair', color: 'text-amber-500', width: '66%', bg: 'bg-amber-500' };
+    return { text: 'Strong', color: 'text-emerald-500', width: '100%', bg: 'bg-emerald-500' };
   };
 
   const handleSubmit = async (e) => {
@@ -40,7 +41,6 @@ export default function RegisterPage() {
       toast.error('Password must be at least 6 characters');
       return;
     }
-
     setLoading(true);
     try {
       await register(email, password, name);
@@ -53,139 +53,133 @@ export default function RegisterPage() {
     }
   };
 
+  const features = [
+    "AI-generated personalized itineraries",
+    "Visa requirements & travel tips",
+    "Curated restaurant recommendations",
+    "Fitness activities at your destination",
+    "All booking links in one place"
+  ];
+
   return (
-    <div className="min-h-screen bg-[#050505] flex" data-testid="register-page">
+    <div className="min-h-screen flex relative" style={{ background: 'var(--background)' }} data-testid="register-page">
+      <div className="bg-animated" />
+      
+      {/* Theme Toggle */}
+      <button onClick={toggleTheme} className="absolute top-6 right-6 z-50 w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
+        {theme === 'dark' ? <Sun className="w-5 h-5 text-amber-400" /> : <Moon className="w-5 h-5 text-violet-500" />}
+      </button>
+
       {/* Left side - Image */}
       <div className="hidden lg:block lg:w-1/2 relative">
         <img 
-          src="https://images.unsplash.com/photo-1669668869489-aa778bf6d594?crop=entropy&cs=srgb&fm=jpg&q=85&w=1200"
+          src="https://images.unsplash.com/photo-1506929562872-bb421503ef21?w=1200"
           alt="Travel destination"
           className="absolute inset-0 w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-l from-[#050505] via-[#050505]/50 to-transparent"></div>
-        <div className="absolute bottom-12 left-12 right-12">
-          <h2 className="font-heading text-4xl text-white mb-4">Start Your Journey</h2>
-          <div className="space-y-3">
-            {[
-              "AI-generated personalized itineraries",
-              "Visa requirements & travel tips",
-              "Curated restaurant & activity recommendations",
-              "All booking links in one place"
-            ].map((feature, i) => (
-              <div key={i} className="flex items-center gap-3">
-                <div className="w-5 h-5 rounded-full bg-[#D4AF37]/20 flex items-center justify-center">
-                  <Check className="w-3 h-3 text-[#D4AF37]" />
-                </div>
-                <span className="text-white/70 font-body">{feature}</span>
-              </div>
-            ))}
-          </div>
+        <div className="absolute inset-0" style={{ background: theme === 'dark' ? 'linear-gradient(to left, var(--background) 0%, transparent 50%, transparent 100%)' : 'linear-gradient(to left, var(--background) 0%, rgba(250,250,255,0.3) 50%, transparent 100%)' }}></div>
+        
+        <div className="absolute inset-0 flex flex-col justify-end p-12">
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="glass p-8 rounded-3xl">
+            <h2 className="font-heading text-3xl font-bold mb-6" style={{ color: 'var(--foreground)' }}>Start Your Journey</h2>
+            <div className="space-y-4">
+              {features.map((feature, i) => (
+                <motion.div key={i} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3 + i * 0.1 }} className="flex items-center gap-3">
+                  <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center">
+                    <Check className="w-4 h-4 text-white" />
+                  </div>
+                  <span style={{ color: 'var(--foreground-muted)' }}>{feature}</span>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
         </div>
       </div>
 
       {/* Right side - Form */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-8">
-        <motion.div 
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          className="w-full max-w-md"
-        >
-          <Link to="/" className="flex items-center gap-2 mb-12" data-testid="register-logo">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#D4AF37] to-[#A38322] flex items-center justify-center">
-              <Plane className="w-5 h-5 text-black" />
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-8 relative z-10">
+        <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="w-full max-w-md">
+          <Link to="/" className="flex items-center gap-3 mb-12" data-testid="register-logo">
+            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-violet-500 via-purple-500 to-pink-500 flex items-center justify-center shadow-lg shadow-purple-500/25">
+              <Plane className="w-6 h-6 text-white" />
             </div>
-            <span className="font-heading text-2xl text-white tracking-tight">Odyssey</span>
+            <span className="font-heading text-2xl font-bold" style={{ color: 'var(--foreground)' }}>Odyssey</span>
           </Link>
 
-          <h1 className="font-heading text-4xl text-white mb-2">Create Account</h1>
-          <p className="text-white/50 font-body mb-8">Join thousands of travelers planning smarter</p>
+          <h1 className="font-heading text-4xl sm:text-5xl font-bold mb-2" style={{ color: 'var(--foreground)' }}>Create Account</h1>
+          <p className="text-lg mb-8" style={{ color: 'var(--foreground-muted)' }}>Join thousands of travelers planning smarter</p>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-5">
             <div className="space-y-2">
-              <Label htmlFor="name" className="text-white/70 font-body">Full Name</Label>
+              <Label htmlFor="name" className="font-medium" style={{ color: 'var(--foreground-muted)' }}>Full Name</Label>
               <div className="relative">
-                <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/30" />
-                <Input
+                <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-violet-500" />
+                <input
                   id="name"
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="John Doe"
-                  className="pl-12 h-12 bg-white/5 border-white/10 text-white placeholder:text-white/30 focus:border-[#D4AF37]/50 focus:ring-[#D4AF37]/20"
+                  className="input-modern pl-12 h-14"
                   data-testid="register-name-input"
                 />
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="email" className="text-white/70 font-body">Email</Label>
+              <Label htmlFor="email" className="font-medium" style={{ color: 'var(--foreground-muted)' }}>Email</Label>
               <div className="relative">
-                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/30" />
-                <Input
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-violet-500" />
+                <input
                   id="email"
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="you@example.com"
-                  className="pl-12 h-12 bg-white/5 border-white/10 text-white placeholder:text-white/30 focus:border-[#D4AF37]/50 focus:ring-[#D4AF37]/20"
+                  className="input-modern pl-12 h-14"
                   data-testid="register-email-input"
                 />
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="password" className="text-white/70 font-body">Password</Label>
+              <Label htmlFor="password" className="font-medium" style={{ color: 'var(--foreground-muted)' }}>Password</Label>
               <div className="relative">
-                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/30" />
-                <Input
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-violet-500" />
+                <input
                   id="password"
                   type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="pl-12 pr-12 h-12 bg-white/5 border-white/10 text-white placeholder:text-white/30 focus:border-[#D4AF37]/50 focus:ring-[#D4AF37]/20"
+                  className="input-modern pl-12 pr-12 h-14"
                   data-testid="register-password-input"
                 />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-white/30 hover:text-white/50"
-                >
+                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 top-1/2 -translate-y-1/2" style={{ color: 'var(--foreground-muted)' }}>
                   {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
               </div>
               {password && (
-                <p className={`text-xs font-body ${passwordStrength().color}`}>
-                  Password strength: {passwordStrength().text}
-                </p>
+                <div className="space-y-1">
+                  <div className="h-1 rounded-full overflow-hidden" style={{ background: 'var(--border)' }}>
+                    <div className={`h-full ${passwordStrength().bg} transition-all`} style={{ width: passwordStrength().width }}></div>
+                  </div>
+                  <p className={`text-xs ${passwordStrength().color}`}>Password strength: {passwordStrength().text}</p>
+                </div>
               )}
             </div>
 
-            <Button
-              type="submit"
-              disabled={loading}
-              className="w-full h-12 bg-[#D4AF37] text-black hover:bg-[#E5C568] rounded-full font-medium"
-              data-testid="register-submit-btn"
-            >
-              {loading ? (
-                <div className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin" />
-              ) : (
-                <>
-                  Create Account
-                  <ArrowRight className="ml-2 w-5 h-5" />
-                </>
-              )}
-            </Button>
+            <button type="submit" disabled={loading} className="btn-gradient w-full h-14 text-lg rounded-2xl" data-testid="register-submit-btn">
+              {loading ? <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" /> : <>Create Account <ArrowRight className="ml-2 w-5 h-5 inline" /></>}
+            </button>
           </form>
 
-          <p className="text-center text-white/50 font-body mt-8">
+          <p className="text-center mt-8" style={{ color: 'var(--foreground-muted)' }}>
             Already have an account?{' '}
-            <Link to="/login" className="text-[#D4AF37] hover:text-[#E5C568] transition-colors">
-              Sign in
-            </Link>
+            <Link to="/login" className="text-violet-500 hover:text-violet-400 font-medium transition-colors">Sign in</Link>
           </p>
 
-          <p className="text-center text-white/30 font-body text-xs mt-6">
+          <p className="text-center text-xs mt-6" style={{ color: 'var(--foreground-muted)' }}>
             By creating an account, you agree to our Terms of Service and Privacy Policy
           </p>
         </motion.div>
