@@ -5,7 +5,8 @@ import {
   Plane, MapPin, Calendar, Users, DollarSign, Sun, Cloud, CloudRain,
   ArrowRight, ArrowLeft, ExternalLink, Save, Share2, Utensils,
   Car, Train, Bus, Clock, Star, Eye, ChevronDown, ChevronUp,
-  AlertCircle, Check, Globe, FileText, Home
+  AlertCircle, Check, Globe, FileText, Home, Mail, Backpack,
+  Footprints, Bike, Ship
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
@@ -26,9 +27,12 @@ const WeatherIcon = ({ condition }) => {
 
 const TransportIcon = ({ type }) => {
   const lower = type?.toLowerCase() || '';
-  if (lower.includes('uber') || lower.includes('taxi') || lower.includes('car')) return <Car className="w-4 h-4" />;
-  if (lower.includes('train') || lower.includes('metro')) return <Train className="w-4 h-4" />;
-  if (lower.includes('bus')) return <Bus className="w-4 h-4" />;
+  if (lower.includes('uber') || lower.includes('taxi') || lower.includes('car') || lower.includes('lyft') || lower.includes('bolt')) return <Car className="w-4 h-4" />;
+  if (lower.includes('train') || lower.includes('metro') || lower.includes('subway') || lower.includes('tram')) return <Train className="w-4 h-4" />;
+  if (lower.includes('bus') || lower.includes('coach')) return <Bus className="w-4 h-4" />;
+  if (lower.includes('walk')) return <Footprints className="w-4 h-4" />;
+  if (lower.includes('bike') || lower.includes('cycle')) return <Bike className="w-4 h-4" />;
+  if (lower.includes('ferry') || lower.includes('boat')) return <Ship className="w-4 h-4" />;
   return <MapPin className="w-4 h-4" />;
 };
 
@@ -38,6 +42,7 @@ export default function TripResultPage() {
   const [trip, setTrip] = useState(null);
   const [expandedDays, setExpandedDays] = useState({});
   const [saving, setSaving] = useState(false);
+  const [sendingEmail, setSendingEmail] = useState(false);
   const [activeTab, setActiveTab] = useState('itinerary');
 
   useEffect(() => {
@@ -64,15 +69,43 @@ export default function TripResultPage() {
 
     setSaving(true);
     try {
-      await axios.post(`${API_URL}/trips/save`, trip, {
+      const response = await axios.post(`${API_URL}/trips/save`, trip, {
         headers: getAuthHeader()
       });
       toast.success('Trip saved to your dashboard!');
-      navigate('/dashboard');
+      // Update trip ID for email sending
+      if (response.data?.trip_id) {
+        setTrip(prev => ({ ...prev, id: response.data.trip_id }));
+      }
     } catch (error) {
       toast.error('Failed to save trip');
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleSendEmail = async () => {
+    if (!user) {
+      toast.error('Please sign in to send trip to email');
+      navigate('/login');
+      return;
+    }
+
+    if (!trip.id || trip.id.includes('generated')) {
+      toast.error('Please save the trip first');
+      return;
+    }
+
+    setSendingEmail(true);
+    try {
+      await axios.post(`${API_URL}/trips/${trip.id}/send-email`, {}, {
+        headers: getAuthHeader()
+      });
+      toast.success('Trip sent to your email!');
+    } catch (error) {
+      toast.error('Failed to send email');
+    } finally {
+      setSendingEmail(false);
     }
   };
 
@@ -120,6 +153,22 @@ export default function TripResultPage() {
                 <>
                   <Save className="w-4 h-4 mr-2" />
                   Save Trip
+                </>
+              )}
+            </Button>
+            <Button
+              onClick={handleSendEmail}
+              disabled={sendingEmail || !user}
+              variant="outline"
+              className="border-white/20 text-white hover:bg-white/5"
+              data-testid="email-trip-btn"
+            >
+              {sendingEmail ? (
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              ) : (
+                <>
+                  <Mail className="w-4 h-4 mr-2" />
+                  Email
                 </>
               )}
             </Button>
