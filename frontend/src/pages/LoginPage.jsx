@@ -6,6 +6,7 @@ import { Label } from '../components/ui/label';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 import { toast } from 'sonner';
+import { getErrorMessage } from '../utils/errorHandler';
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -33,7 +34,7 @@ export default function LoginPage() {
       toast.success('Welcome back to Odyssey!');
       navigate('/dashboard');
     } catch (error) {
-      toast.error(error.response?.data?.detail || 'Invalid email or password');
+      toast.error(getErrorMessage(error, 'Invalid email or password'));
     } finally {
       setLoading(false);
     }
