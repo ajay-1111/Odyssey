@@ -6,12 +6,16 @@ import {
   ArrowRight, Globe, Shield, Clock, Star,
   ChevronRight, Menu, X, Mail, Phone, MapPinned,
   Instagram, Twitter, Facebook, Linkedin, Youtube,
-  Heart, Zap, Award, TrendingUp, Send, CheckCircle
+  Heart, Zap, Award, TrendingUp, Send, Sun, Moon,
+  Dumbbell, Utensils, Car, CheckCircle
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Textarea } from '../components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { useAuth } from '../context/AuthContext';
+import { useTheme } from '../context/ThemeContext';
+import { useCurrency } from '../context/CurrencyContext';
 import axios from 'axios';
 import { toast } from 'sonner';
 
@@ -20,6 +24,8 @@ const API_URL = `${process.env.REACT_APP_BACKEND_URL}/api`;
 export default function LandingPage() {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
+  const { theme, toggleTheme } = useTheme();
+  const { currency, setCurrency, currencies } = useCurrency();
   const [destinations, setDestinations] = useState([]);
   const [menuOpen, setMenuOpen] = useState(false);
   const [contactForm, setContactForm] = useState({ name: '', email: '', subject: '', message: '' });
@@ -72,24 +78,23 @@ export default function LandingPage() {
   };
 
   const features = [
-    { icon: Sparkles, title: "AI-Powered Planning", desc: "Get personalized itineraries crafted by advanced AI" },
-    { icon: Globe, title: "Global Coverage", desc: "Plan trips to any destination worldwide" },
-    { icon: Shield, title: "Visa Guidance", desc: "Know requirements before you go" },
-    { icon: Clock, title: "Save Hours", desc: "What takes days, done in minutes" }
+    { icon: Sparkles, title: "AI-Powered Planning", desc: "Personalized itineraries crafted by advanced AI in minutes" },
+    { icon: Globe, title: "190+ Countries", desc: "Plan trips to any destination worldwide with visa guidance" },
+    { icon: Shield, title: "Insurance & Safety", desc: "Best insurance recommendations and safety tips" },
+    { icon: Dumbbell, title: "Fitness Friendly", desc: "Find gyms, marathons, and fitness events at your destination" },
+    { icon: Utensils, title: "Food & Dining", desc: "Restaurant recommendations based on your dietary preferences" },
+    { icon: Car, title: "All Transport", desc: "Flights, trains, buses, taxis - all options with prices" }
   ];
 
-  const stats = [
-    { value: "50K+", label: "Trips Planned", icon: TrendingUp },
-    { value: "190+", label: "Countries", icon: Globe },
-    { value: "4.9", label: "User Rating", icon: Star },
-    { value: "24/7", label: "AI Support", icon: Zap }
-  ];
-
-  const teamMembers = [
-    { name: "Sarah Chen", role: "CEO & Founder", image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200" },
-    { name: "Marcus Williams", role: "CTO", image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200" },
-    { name: "Elena Rodriguez", role: "Head of Product", image: "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=200" },
-    { name: "James Park", role: "Lead Designer", image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200" }
+  const uniqueFeatures = [
+    "Passport-based visa requirements",
+    "Multi-airport flight comparison",
+    "Baggage allowance details",
+    "Weather-based packing lists",
+    "Local emergency numbers",
+    "Currency conversion",
+    "Fitness events finder",
+    "Travel insurance comparison"
   ];
 
   const socialLinks = [
@@ -101,100 +106,98 @@ export default function LandingPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#050505]" data-testid="landing-page">
+    <div className="min-h-screen" style={{ background: 'var(--background)' }} data-testid="landing-page">
       {/* Navigation */}
-      <nav className="fixed top-0 w-full z-50 bg-[#050505]/80 backdrop-blur-md border-b border-white/5">
+      <nav className="fixed top-0 w-full z-50 backdrop-blur-md border-b" style={{ background: 'var(--background)', borderColor: 'var(--border)' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2" data-testid="logo">
             <div className="w-8 sm:w-10 h-8 sm:h-10 rounded-full bg-gradient-to-br from-[#D4AF37] to-[#A38322] flex items-center justify-center">
               <Plane className="w-4 sm:w-5 h-4 sm:h-5 text-black" />
             </div>
-            <span className="font-heading text-xl sm:text-2xl text-white tracking-tight">Odyssey</span>
+            <span className="font-heading text-xl sm:text-2xl tracking-tight" style={{ color: 'var(--foreground)' }}>Odyssey</span>
           </Link>
           
           {/* Desktop Nav */}
-          <div className="hidden md:flex items-center gap-6 lg:gap-8">
-            <Link to="/plan" className="text-white/70 hover:text-[#D4AF37] transition-colors font-body text-sm">
+          <div className="hidden md:flex items-center gap-4 lg:gap-6">
+            <Link to="/plan" className="text-sm transition-colors hover:text-[#D4AF37]" style={{ color: 'var(--foreground-muted)' }}>
               Plan Trip
             </Link>
-            <a href="#about" className="text-white/70 hover:text-[#D4AF37] transition-colors font-body text-sm">
-              About Us
+            <a href="#features" className="text-sm transition-colors hover:text-[#D4AF37]" style={{ color: 'var(--foreground-muted)' }}>
+              Features
             </a>
-            <a href="#contact" className="text-white/70 hover:text-[#D4AF37] transition-colors font-body text-sm">
+            <a href="#about" className="text-sm transition-colors hover:text-[#D4AF37]" style={{ color: 'var(--foreground-muted)' }}>
+              About
+            </a>
+            <a href="#contact" className="text-sm transition-colors hover:text-[#D4AF37]" style={{ color: 'var(--foreground-muted)' }}>
               Contact
             </a>
             {user ? (
               <>
-                <Link to="/dashboard" className="text-white/70 hover:text-[#D4AF37] transition-colors font-body text-sm">
+                <Link to="/dashboard" className="text-sm transition-colors hover:text-[#D4AF37]" style={{ color: 'var(--foreground-muted)' }}>
                   My Trips
                 </Link>
-                <Button 
-                  onClick={() => { logout(); toast.success('Logged out'); }}
-                  variant="ghost"
-                  className="text-white/70 hover:text-[#D4AF37] text-sm"
-                >
+                <Button onClick={() => { logout(); toast.success('Logged out'); }} variant="ghost" className="text-sm" style={{ color: 'var(--foreground-muted)' }}>
                   Logout
                 </Button>
               </>
             ) : (
-              <Link to="/login" className="text-white/70 hover:text-[#D4AF37] transition-colors font-body text-sm">
+              <Link to="/login" className="text-sm transition-colors hover:text-[#D4AF37]" style={{ color: 'var(--foreground-muted)' }}>
                 Sign In
               </Link>
             )}
-            <Button 
-              onClick={() => navigate('/plan')}
-              className="bg-[#D4AF37] text-black hover:bg-[#E5C568] rounded-full px-4 lg:px-6 text-sm"
-              data-testid="nav-start-planning-btn"
+            
+            {/* Currency Selector */}
+            <Select value={currency} onValueChange={setCurrency}>
+              <SelectTrigger className="w-20 h-8 text-xs" style={{ background: 'var(--input-bg)', borderColor: 'var(--border)' }}>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent style={{ background: 'var(--background-secondary)' }}>
+                {currencies.slice(0, 10).map((curr) => (
+                  <SelectItem key={curr.code} value={curr.code}>{curr.symbol} {curr.code}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            
+            {/* Theme Toggle */}
+            <button
+              onClick={toggleTheme}
+              className="w-9 h-9 rounded-full flex items-center justify-center transition-colors"
+              style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}
+              data-testid="theme-toggle"
             >
+              {theme === 'dark' ? <Sun className="w-4 h-4 text-[#D4AF37]" /> : <Moon className="w-4 h-4 text-[#D4AF37]" />}
+            </button>
+            
+            <Button onClick={() => navigate('/plan')} className="bg-[#D4AF37] text-black hover:bg-[#E5C568] rounded-full px-6 text-sm">
               Start Planning
             </Button>
           </div>
 
-          {/* Mobile menu button */}
-          <button 
-            className="md:hidden text-white p-2"
-            onClick={() => setMenuOpen(!menuOpen)}
-            data-testid="mobile-menu-btn"
-          >
-            {menuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
+          {/* Mobile Controls */}
+          <div className="flex md:hidden items-center gap-2">
+            <button onClick={toggleTheme} className="w-9 h-9 rounded-full flex items-center justify-center" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
+              {theme === 'dark' ? <Sun className="w-4 h-4 text-[#D4AF37]" /> : <Moon className="w-4 h-4 text-[#D4AF37]" />}
+            </button>
+            <button onClick={() => setMenuOpen(!menuOpen)} className="p-2" style={{ color: 'var(--foreground)' }}>
+              {menuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            </button>
+          </div>
         </div>
 
         {/* Mobile Nav */}
         {menuOpen && (
-          <motion.div 
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="md:hidden bg-[#0A0A0A] border-b border-white/5 px-6 py-4"
-          >
+          <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="md:hidden px-6 py-4 border-t" style={{ background: 'var(--background-secondary)', borderColor: 'var(--border)' }}>
             <div className="flex flex-col gap-4">
-              <Link to="/plan" className="text-white/70 hover:text-[#D4AF37] transition-colors py-2" onClick={() => setMenuOpen(false)}>
-                Plan Trip
-              </Link>
-              <a href="#about" className="text-white/70 hover:text-[#D4AF37] transition-colors py-2" onClick={() => setMenuOpen(false)}>
-                About Us
-              </a>
-              <a href="#contact" className="text-white/70 hover:text-[#D4AF37] transition-colors py-2" onClick={() => setMenuOpen(false)}>
-                Contact
-              </a>
+              <Link to="/plan" className="py-2" style={{ color: 'var(--foreground-muted)' }} onClick={() => setMenuOpen(false)}>Plan Trip</Link>
+              <a href="#features" className="py-2" style={{ color: 'var(--foreground-muted)' }} onClick={() => setMenuOpen(false)}>Features</a>
+              <a href="#about" className="py-2" style={{ color: 'var(--foreground-muted)' }} onClick={() => setMenuOpen(false)}>About</a>
+              <a href="#contact" className="py-2" style={{ color: 'var(--foreground-muted)' }} onClick={() => setMenuOpen(false)}>Contact</a>
               {user ? (
-                <>
-                  <Link to="/dashboard" className="text-white/70 hover:text-[#D4AF37] transition-colors py-2" onClick={() => setMenuOpen(false)}>
-                    My Trips
-                  </Link>
-                  <button onClick={() => { logout(); setMenuOpen(false); toast.success('Logged out'); }} className="text-white/70 hover:text-[#D4AF37] transition-colors py-2 text-left">
-                    Logout
-                  </button>
-                </>
+                <Link to="/dashboard" className="py-2" style={{ color: 'var(--foreground-muted)' }} onClick={() => setMenuOpen(false)}>My Trips</Link>
               ) : (
-                <Link to="/login" className="text-white/70 hover:text-[#D4AF37] transition-colors py-2" onClick={() => setMenuOpen(false)}>
-                  Sign In
-                </Link>
+                <Link to="/login" className="py-2" style={{ color: 'var(--foreground-muted)' }} onClick={() => setMenuOpen(false)}>Sign In</Link>
               )}
-              <Button 
-                onClick={() => { navigate('/plan'); setMenuOpen(false); }}
-                className="bg-[#D4AF37] text-black hover:bg-[#E5C568] rounded-full w-full"
-              >
+              <Button onClick={() => { navigate('/plan'); setMenuOpen(false); }} className="bg-[#D4AF37] text-black hover:bg-[#E5C568] rounded-full w-full">
                 Start Planning
               </Button>
             </div>
@@ -205,118 +208,64 @@ export default function LandingPage() {
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
         <div className="absolute inset-0">
-          <img 
-            src="https://images.unsplash.com/photo-1694430684128-409007a848d6?crop=entropy&cs=srgb&fm=jpg&q=85&w=1920"
-            alt="Travel destination"
-            className="w-full h-full object-cover opacity-40"
-          />
-          <div className="absolute inset-0 bg-gradient-to-b from-[#050505]/50 via-[#050505]/70 to-[#050505]"></div>
+          <img src="https://images.unsplash.com/photo-1488085061387-422e29b40080?w=1920" alt="Travel" className="w-full h-full object-cover opacity-30" />
+          <div className="absolute inset-0" style={{ background: `linear-gradient(to bottom, var(--background) 0%, transparent 30%, var(--background) 100%)` }}></div>
         </div>
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-          >
-            <p className="text-[#D4AF37] uppercase tracking-[0.2em] sm:tracking-[0.3em] text-xs sm:text-sm mb-4 sm:mb-6 font-body">
-              AI-Powered Travel Planning
-            </p>
-            <h1 className="font-heading text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-white font-light tracking-tight mb-4 sm:mb-6 px-4">
-              The Art of Getting Lost,
+          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
+            <p className="text-[#D4AF37] uppercase tracking-[0.2em] text-xs sm:text-sm mb-4 font-body">AI-Powered Travel Planning</p>
+            <h1 className="font-heading text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-light tracking-tight mb-6 px-4" style={{ color: 'var(--foreground)' }}>
+              Plan Your Perfect Journey
               <br />
-              <span className="text-gradient-gold font-medium">Curated by AI</span>
+              <span className="text-gradient-gold font-medium">In Minutes, Not Hours</span>
             </h1>
-            <p className="text-white/60 text-base sm:text-lg md:text-xl max-w-2xl mx-auto mb-8 sm:mb-10 font-body font-light px-4">
-              Plan your perfect journey in minutes. Day-wise itineraries, visa guidance, 
-              local gems, and booking links—all powered by artificial intelligence.
+            <p className="text-base sm:text-lg md:text-xl max-w-2xl mx-auto mb-10 font-body font-light px-4" style={{ color: 'var(--foreground-muted)' }}>
+              Complete travel planning with flights, hotels, day-wise itineraries, visa guidance, 
+              packing lists, and fitness activities—all personalized by AI.
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center px-4">
-              <Button 
-                onClick={() => navigate('/plan')}
-                className="bg-[#D4AF37] text-black hover:bg-[#E5C568] rounded-full px-6 sm:px-8 py-5 sm:py-6 text-base sm:text-lg font-medium group"
-                data-testid="hero-start-planning-btn"
-              >
+              <Button onClick={() => navigate('/plan')} className="bg-[#D4AF37] text-black hover:bg-[#E5C568] rounded-full px-8 py-6 text-lg font-medium group">
                 Start Your Odyssey
                 <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </Button>
-              <Button 
-                variant="outline"
-                onClick={() => document.getElementById('features').scrollIntoView({ behavior: 'smooth' })}
-                className="border-white/20 text-white hover:bg-white/5 rounded-full px-6 sm:px-8 py-5 sm:py-6 text-base sm:text-lg"
-                data-testid="learn-more-btn"
-              >
-                Learn More
+              <Button variant="outline" onClick={() => document.getElementById('features').scrollIntoView({ behavior: 'smooth' })} className="rounded-full px-8 py-6 text-lg" style={{ borderColor: 'var(--border)', color: 'var(--foreground)' }}>
+                See Features
               </Button>
             </div>
           </motion.div>
 
-          {/* Stats */}
-          <motion.div 
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.3 }}
-            className="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-8 mt-16 sm:mt-20 max-w-3xl mx-auto px-4"
-          >
-            {stats.map((stat, i) => (
-              <div key={i} className="text-center p-4 rounded-xl bg-white/5 backdrop-blur-sm">
-                <stat.icon className="w-5 h-5 text-[#D4AF37] mx-auto mb-2" />
-                <p className="text-2xl sm:text-3xl md:text-4xl font-heading text-[#D4AF37]">{stat.value}</p>
-                <p className="text-white/50 text-xs sm:text-sm mt-1 font-body">{stat.label}</p>
-              </div>
+          {/* Unique Features List */}
+          <motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.3 }} className="flex flex-wrap justify-center gap-3 mt-16 px-4">
+            {uniqueFeatures.map((feature, i) => (
+              <span key={i} className="flex items-center gap-2 px-4 py-2 rounded-full text-sm" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)', color: 'var(--foreground-muted)' }}>
+                <CheckCircle className="w-4 h-4 text-[#D4AF37]" />
+                {feature}
+              </span>
             ))}
           </motion.div>
         </div>
-
-        {/* Scroll indicator */}
-        <motion.div 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1 }}
-          className="absolute bottom-10 left-1/2 -translate-x-1/2 hidden sm:block"
-        >
-          <div className="w-6 h-10 border-2 border-white/20 rounded-full flex items-start justify-center p-1">
-            <motion.div 
-              animate={{ y: [0, 12, 0] }}
-              transition={{ duration: 1.5, repeat: Infinity }}
-              className="w-1.5 h-1.5 bg-[#D4AF37] rounded-full"
-            />
-          </div>
-        </motion.div>
       </section>
 
       {/* Features Section */}
-      <section id="features" className="py-16 sm:py-24 px-4 sm:px-6">
+      <section id="features" className="py-20 px-4 sm:px-6" style={{ background: 'var(--background-secondary)' }}>
         <div className="max-w-7xl mx-auto">
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-12 sm:mb-16"
-          >
-            <p className="text-[#D4AF37] uppercase tracking-[0.2em] text-xs sm:text-sm mb-4 font-body">Why Odyssey</p>
-            <h2 className="font-heading text-3xl sm:text-4xl md:text-5xl text-white font-light">
-              Travel Planning, <span className="text-gradient-gold">Reimagined</span>
+          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-16">
+            <p className="text-[#D4AF37] uppercase tracking-[0.2em] text-xs sm:text-sm mb-4 font-body">Features</p>
+            <h2 className="font-heading text-3xl sm:text-4xl md:text-5xl font-light" style={{ color: 'var(--foreground)' }}>
+              Everything You Need, <span className="text-gradient-gold">Nothing You Don't</span>
             </h2>
           </motion.div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {features.map((feature, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-                className="card-glass p-6 sm:p-8 hover:border-[#D4AF37]/30 group"
-                data-testid={`feature-card-${i}`}
-              >
-                <div className="w-12 sm:w-14 h-12 sm:h-14 rounded-xl bg-[#D4AF37]/10 flex items-center justify-center mb-4 sm:mb-6 group-hover:bg-[#D4AF37]/20 transition-colors">
-                  <feature.icon className="w-6 sm:w-7 h-6 sm:h-7 text-[#D4AF37]" />
+              <motion.div key={i} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }} className="card-glass p-8 hover:border-[#D4AF37]/30">
+                <div className="w-14 h-14 rounded-xl flex items-center justify-center mb-6" style={{ background: 'rgba(212, 175, 55, 0.1)' }}>
+                  <feature.icon className="w-7 h-7 text-[#D4AF37]" />
                 </div>
-                <h3 className="font-heading text-lg sm:text-xl text-white mb-2 sm:mb-3">{feature.title}</h3>
-                <p className="text-white/50 font-body text-sm leading-relaxed">{feature.desc}</p>
+                <h3 className="font-heading text-xl mb-3" style={{ color: 'var(--foreground)' }}>{feature.title}</h3>
+                <p className="font-body text-sm" style={{ color: 'var(--foreground-muted)' }}>{feature.desc}</p>
               </motion.div>
             ))}
           </div>
@@ -324,63 +273,34 @@ export default function LandingPage() {
       </section>
 
       {/* Popular Destinations */}
-      <section className="py-16 sm:py-24 px-4 sm:px-6 bg-[#0A0A0A]">
+      <section className="py-20 px-4 sm:px-6">
         <div className="max-w-7xl mx-auto">
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 sm:mb-12 gap-4"
-          >
+          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="flex flex-col sm:flex-row sm:items-end justify-between mb-12 gap-4">
             <div>
-              <p className="text-[#D4AF37] uppercase tracking-[0.2em] text-xs sm:text-sm mb-2 sm:mb-4 font-body">Explore</p>
-              <h2 className="font-heading text-3xl sm:text-4xl md:text-5xl text-white font-light">
-                Popular Destinations
-              </h2>
+              <p className="text-[#D4AF37] uppercase tracking-[0.2em] text-xs sm:text-sm mb-4 font-body">Explore</p>
+              <h2 className="font-heading text-3xl sm:text-4xl font-light" style={{ color: 'var(--foreground)' }}>Popular Destinations</h2>
             </div>
-            <Link 
-              to="/plan" 
-              className="flex items-center gap-2 text-[#D4AF37] hover:text-[#E5C568] transition-colors font-body text-sm"
-            >
-              View All <ChevronRight className="w-4 h-4" />
+            <Link to="/plan" className="flex items-center gap-2 text-[#D4AF37] hover:text-[#E5C568] transition-colors font-body text-sm">
+              Plan Your Trip <ChevronRight className="w-4 h-4" />
             </Link>
           </motion.div>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {destinations.slice(0, 8).map((dest, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.05 }}
-                className="group cursor-pointer img-zoom"
-                onClick={() => navigate('/plan')}
-                data-testid={`destination-card-${i}`}
-              >
+              <motion.div key={i} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.05 }} className="group cursor-pointer img-zoom" onClick={() => navigate('/plan')}>
                 <div className="relative aspect-[4/5] rounded-xl overflow-hidden">
-                  <img 
-                    src={dest.image} 
-                    alt={dest.name}
-                    className="w-full h-full object-cover"
-                    loading="lazy"
-                  />
+                  <img src={dest.image} alt={dest.name} className="w-full h-full object-cover" loading="lazy" />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
-                  <div className="absolute bottom-0 left-0 right-0 p-3 sm:p-6">
-                    <p className="text-white/60 text-xs sm:text-sm font-body mb-1">{dest.tagline}</p>
-                    <h3 className="font-heading text-sm sm:text-xl text-white">{dest.name}</h3>
+                  <div className="absolute bottom-0 left-0 right-0 p-4">
+                    <p className="text-white/60 text-xs mb-1">{dest.tagline}</p>
+                    <h3 className="font-heading text-lg text-white">{dest.name}</h3>
                     {dest.rating && (
-                      <div className="flex items-center gap-1 mt-1 sm:mt-2">
+                      <div className="flex items-center gap-1 mt-1">
                         <Star className="w-3 h-3 text-[#D4AF37] fill-[#D4AF37]" />
                         <span className="text-white/70 text-xs">{dest.rating}</span>
                       </div>
                     )}
                   </div>
-                  <div className="absolute top-3 right-3 sm:top-4 sm:right-4 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[#D4AF37] flex items-center justify-center">
-                      <ArrowRight className="w-4 sm:w-5 h-4 sm:h-5 text-black" />
-                    </div>
-                  </div>
                 </div>
               </motion.div>
             ))}
@@ -388,191 +308,93 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* How It Works */}
-      <section className="py-16 sm:py-24 px-4 sm:px-6">
+      {/* About Section */}
+      <section id="about" className="py-20 px-4 sm:px-6" style={{ background: 'var(--background-secondary)' }}>
         <div className="max-w-7xl mx-auto">
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-12 sm:mb-16"
-          >
-            <p className="text-[#D4AF37] uppercase tracking-[0.2em] text-xs sm:text-sm mb-4 font-body">Simple Process</p>
-            <h2 className="font-heading text-3xl sm:text-4xl md:text-5xl text-white font-light">
-              How It Works
-            </h2>
-          </motion.div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
-            {[
-              { step: "01", icon: MapPin, title: "Enter Details", desc: "Tell us where, when, and who's traveling" },
-              { step: "02", icon: Sparkles, title: "AI Creates", desc: "Our AI crafts your perfect itinerary" },
-              { step: "03", icon: Calendar, title: "Book & Go", desc: "Use our curated links to book everything" }
-            ].map((item, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-                className="relative text-center p-6"
-              >
-                <div className="w-16 sm:w-20 h-16 sm:h-20 mx-auto mb-6 rounded-full bg-gradient-to-br from-[#D4AF37]/20 to-transparent border border-[#D4AF37]/30 flex items-center justify-center">
-                  <item.icon className="w-7 sm:w-8 h-7 sm:h-8 text-[#D4AF37]" />
-                </div>
-                <span className="absolute top-0 left-1/2 -translate-x-1/2 text-[#D4AF37]/20 font-heading text-5xl sm:text-6xl font-bold">
-                  {item.step}
-                </span>
-                <h3 className="font-heading text-xl sm:text-2xl text-white mb-2 sm:mb-3">{item.title}</h3>
-                <p className="text-white/50 font-body text-sm">{item.desc}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* About Us Section */}
-      <section id="about" className="py-16 sm:py-24 px-4 sm:px-6 bg-[#0A0A0A]">
-        <div className="max-w-7xl mx-auto">
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-12 sm:mb-16"
-          >
+          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-16">
             <p className="text-[#D4AF37] uppercase tracking-[0.2em] text-xs sm:text-sm mb-4 font-body">About Us</p>
-            <h2 className="font-heading text-3xl sm:text-4xl md:text-5xl text-white font-light mb-6">
-              Our Story
-            </h2>
-            <p className="text-white/60 max-w-3xl mx-auto font-body text-sm sm:text-base leading-relaxed">
-              Founded in 2024, Odyssey was born from a simple idea: travel planning shouldn't be stressful. 
-              Our team of passionate travelers and AI engineers came together to create the ultimate trip planning 
-              companion. We believe that everyone deserves perfectly curated adventures, and our AI makes that possible 
-              in minutes instead of hours.
-            </p>
+            <h2 className="font-heading text-3xl sm:text-4xl font-light mb-6" style={{ color: 'var(--foreground)' }}>Meet the Founder</h2>
           </motion.div>
 
-          {/* Values */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-16">
-            {[
-              { icon: Heart, title: "Passion for Travel", desc: "We're travelers first, tech second. Every feature comes from real travel experiences." },
-              { icon: Zap, title: "Innovation", desc: "We leverage cutting-edge AI to make trip planning effortless and personalized." },
-              { icon: Award, title: "Excellence", desc: "We're committed to providing the best travel recommendations and booking links." }
-            ].map((value, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-                className="card-glass p-6 sm:p-8 text-center"
-              >
-                <div className="w-12 h-12 mx-auto mb-4 rounded-full bg-[#D4AF37]/10 flex items-center justify-center">
-                  <value.icon className="w-6 h-6 text-[#D4AF37]" />
-                </div>
-                <h3 className="font-heading text-lg sm:text-xl text-white mb-2">{value.title}</h3>
-                <p className="text-white/50 font-body text-sm">{value.desc}</p>
-              </motion.div>
-            ))}
-          </div>
+          <div className="max-w-3xl mx-auto text-center">
+            <motion.div initial={{ opacity: 0, scale: 0.9 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }}>
+              <div className="w-32 h-32 mx-auto mb-6 rounded-full overflow-hidden border-4 border-[#D4AF37]/30">
+                <img 
+                  src="https://customer-assets.emergentagent.com/job_globetrek-18/artifacts/s7d3b7vu_IMG_20211022_140948.jpeg" 
+                  alt="Ajay Reddy Gopu - Founder" 
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <h3 className="font-heading text-2xl mb-2" style={{ color: 'var(--foreground)' }}>Ajay Reddy Gopu</h3>
+              <p className="text-[#D4AF37] font-body mb-6">Founder & CEO</p>
+              <p className="font-body leading-relaxed" style={{ color: 'var(--foreground-muted)' }}>
+                As a passionate traveler who has explored over 30 countries, I founded Odyssey to solve the biggest pain point 
+                in travel - planning. Our AI-powered platform takes the hassle out of trip planning, giving you more time to 
+                actually enjoy your adventures. From visa requirements to fitness centers, we've thought of everything so you don't have to.
+              </p>
+            </motion.div>
 
-          {/* Team */}
-          <div className="text-center mb-8">
-            <h3 className="font-heading text-2xl sm:text-3xl text-white mb-8">Meet Our Team</h3>
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
-            {teamMembers.map((member, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-                className="text-center"
-              >
-                <div className="relative w-24 h-24 sm:w-32 sm:h-32 mx-auto mb-4 rounded-full overflow-hidden border-2 border-[#D4AF37]/30">
-                  <img src={member.image} alt={member.name} className="w-full h-full object-cover" />
-                </div>
-                <h4 className="font-heading text-base sm:text-lg text-white">{member.name}</h4>
-                <p className="text-[#D4AF37] font-body text-xs sm:text-sm">{member.role}</p>
-              </motion.div>
-            ))}
+            {/* Values */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mt-16">
+              {[
+                { icon: Heart, title: "Passion", desc: "Built by travelers, for travelers" },
+                { icon: Zap, title: "Innovation", desc: "AI that understands your needs" },
+                { icon: Award, title: "Excellence", desc: "Quality recommendations always" }
+              ].map((value, i) => (
+                <motion.div key={i} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }} className="card-glass p-6 text-center">
+                  <div className="w-12 h-12 mx-auto mb-4 rounded-full flex items-center justify-center" style={{ background: 'rgba(212, 175, 55, 0.1)' }}>
+                    <value.icon className="w-6 h-6 text-[#D4AF37]" />
+                  </div>
+                  <h4 className="font-heading text-lg mb-2" style={{ color: 'var(--foreground)' }}>{value.title}</h4>
+                  <p className="text-sm" style={{ color: 'var(--foreground-muted)' }}>{value.desc}</p>
+                </motion.div>
+              ))}
+            </div>
           </div>
         </div>
       </section>
 
       {/* Contact Section */}
-      <section id="contact" className="py-16 sm:py-24 px-4 sm:px-6">
+      <section id="contact" className="py-20 px-4 sm:px-6">
         <div className="max-w-7xl mx-auto">
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-12 sm:mb-16"
-          >
-            <p className="text-[#D4AF37] uppercase tracking-[0.2em] text-xs sm:text-sm mb-4 font-body">Contact Us</p>
-            <h2 className="font-heading text-3xl sm:text-4xl md:text-5xl text-white font-light">
-              Get In Touch
-            </h2>
+          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-16">
+            <p className="text-[#D4AF37] uppercase tracking-[0.2em] text-xs sm:text-sm mb-4 font-body">Contact</p>
+            <h2 className="font-heading text-3xl sm:text-4xl font-light" style={{ color: 'var(--foreground)' }}>Get In Touch</h2>
           </motion.div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
             {/* Contact Info */}
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-            >
-              <h3 className="font-heading text-xl sm:text-2xl text-white mb-6">We'd Love to Hear From You</h3>
-              <p className="text-white/60 font-body mb-8 text-sm sm:text-base">
-                Have questions about planning your next trip? Want to partner with us? 
-                Or just want to say hello? Drop us a message!
+            <motion.div initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}>
+              <h3 className="font-heading text-2xl mb-6" style={{ color: 'var(--foreground)' }}>We'd Love to Hear From You</h3>
+              <p className="font-body mb-8" style={{ color: 'var(--foreground-muted)' }}>
+                Have questions? Want to partner with us? Drop us a message!
               </p>
 
-              <div className="space-y-4 sm:space-y-6">
-                <div className="flex items-center gap-4">
-                  <div className="w-10 sm:w-12 h-10 sm:h-12 rounded-full bg-[#D4AF37]/10 flex items-center justify-center">
-                    <Mail className="w-5 h-5 text-[#D4AF37]" />
+              <div className="space-y-4">
+                {[
+                  { icon: Mail, label: "Email", value: "hello@odysseytravel.com" },
+                  { icon: Phone, label: "Phone", value: "+1 (555) 123-4567" },
+                  { icon: MapPinned, label: "Location", value: "San Francisco, CA" }
+                ].map((item, i) => (
+                  <div key={i} className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-full flex items-center justify-center" style={{ background: 'rgba(212, 175, 55, 0.1)' }}>
+                      <item.icon className="w-5 h-5 text-[#D4AF37]" />
+                    </div>
+                    <div>
+                      <p className="text-xs" style={{ color: 'var(--foreground-muted)' }}>{item.label}</p>
+                      <p className="font-body" style={{ color: 'var(--foreground)' }}>{item.value}</p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-white/50 text-xs sm:text-sm">Email</p>
-                    <p className="text-white font-body text-sm sm:text-base">hello@odysseytravel.com</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-4">
-                  <div className="w-10 sm:w-12 h-10 sm:h-12 rounded-full bg-[#D4AF37]/10 flex items-center justify-center">
-                    <Phone className="w-5 h-5 text-[#D4AF37]" />
-                  </div>
-                  <div>
-                    <p className="text-white/50 text-xs sm:text-sm">Phone</p>
-                    <p className="text-white font-body text-sm sm:text-base">+1 (555) 123-4567</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-4">
-                  <div className="w-10 sm:w-12 h-10 sm:h-12 rounded-full bg-[#D4AF37]/10 flex items-center justify-center">
-                    <MapPinned className="w-5 h-5 text-[#D4AF37]" />
-                  </div>
-                  <div>
-                    <p className="text-white/50 text-xs sm:text-sm">Address</p>
-                    <p className="text-white font-body text-sm sm:text-base">San Francisco, CA</p>
-                  </div>
-                </div>
+                ))}
               </div>
 
               {/* Social Links */}
               <div className="mt-8">
-                <p className="text-white/50 font-body text-sm mb-4">Follow Us</p>
+                <p className="text-sm mb-4" style={{ color: 'var(--foreground-muted)' }}>Follow Us</p>
                 <div className="flex gap-3">
                   {socialLinks.map((social, i) => (
-                    <a
-                      key={i}
-                      href={social.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-[#D4AF37]/20 hover:border-[#D4AF37]/50 transition-colors"
-                      aria-label={social.label}
-                    >
-                      <social.icon className="w-4 h-4 text-white/70 hover:text-[#D4AF37]" />
+                    <a key={i} href={social.href} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full flex items-center justify-center transition-colors hover:bg-[#D4AF37]/20" style={{ background: 'var(--card-bg)', border: '1px solid var(--border)' }}>
+                      <social.icon className="w-4 h-4 text-[#D4AF37]" />
                     </a>
                   ))}
                 </div>
@@ -580,62 +402,27 @@ export default function LandingPage() {
             </motion.div>
 
             {/* Contact Form */}
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-            >
-              <form onSubmit={handleContactSubmit} className="card-glass p-6 sm:p-8 space-y-4 sm:space-y-6">
+            <motion.div initial={{ opacity: 0, x: 20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}>
+              <form onSubmit={handleContactSubmit} className="card-glass p-8 space-y-6">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="text-white/70 font-body text-sm mb-2 block">Name *</label>
-                    <Input
-                      value={contactForm.name}
-                      onChange={(e) => setContactForm({ ...contactForm, name: e.target.value })}
-                      placeholder="Your name"
-                      className="bg-white/5 border-white/10 text-white placeholder:text-white/30 h-11 sm:h-12"
-                      data-testid="contact-name-input"
-                    />
+                    <label className="text-sm mb-2 block" style={{ color: 'var(--foreground-muted)' }}>Name *</label>
+                    <Input value={contactForm.name} onChange={(e) => setContactForm({ ...contactForm, name: e.target.value })} placeholder="Your name" className="h-12" style={{ background: 'var(--input-bg)', borderColor: 'var(--border)' }} />
                   </div>
                   <div>
-                    <label className="text-white/70 font-body text-sm mb-2 block">Email *</label>
-                    <Input
-                      type="email"
-                      value={contactForm.email}
-                      onChange={(e) => setContactForm({ ...contactForm, email: e.target.value })}
-                      placeholder="you@example.com"
-                      className="bg-white/5 border-white/10 text-white placeholder:text-white/30 h-11 sm:h-12"
-                      data-testid="contact-email-input"
-                    />
+                    <label className="text-sm mb-2 block" style={{ color: 'var(--foreground-muted)' }}>Email *</label>
+                    <Input type="email" value={contactForm.email} onChange={(e) => setContactForm({ ...contactForm, email: e.target.value })} placeholder="you@example.com" className="h-12" style={{ background: 'var(--input-bg)', borderColor: 'var(--border)' }} />
                   </div>
                 </div>
                 <div>
-                  <label className="text-white/70 font-body text-sm mb-2 block">Subject</label>
-                  <Input
-                    value={contactForm.subject}
-                    onChange={(e) => setContactForm({ ...contactForm, subject: e.target.value })}
-                    placeholder="How can we help?"
-                    className="bg-white/5 border-white/10 text-white placeholder:text-white/30 h-11 sm:h-12"
-                    data-testid="contact-subject-input"
-                  />
+                  <label className="text-sm mb-2 block" style={{ color: 'var(--foreground-muted)' }}>Subject</label>
+                  <Input value={contactForm.subject} onChange={(e) => setContactForm({ ...contactForm, subject: e.target.value })} placeholder="How can we help?" className="h-12" style={{ background: 'var(--input-bg)', borderColor: 'var(--border)' }} />
                 </div>
                 <div>
-                  <label className="text-white/70 font-body text-sm mb-2 block">Message *</label>
-                  <Textarea
-                    value={contactForm.message}
-                    onChange={(e) => setContactForm({ ...contactForm, message: e.target.value })}
-                    placeholder="Tell us more..."
-                    rows={4}
-                    className="bg-white/5 border-white/10 text-white placeholder:text-white/30 resize-none"
-                    data-testid="contact-message-input"
-                  />
+                  <label className="text-sm mb-2 block" style={{ color: 'var(--foreground-muted)' }}>Message *</label>
+                  <Textarea value={contactForm.message} onChange={(e) => setContactForm({ ...contactForm, message: e.target.value })} placeholder="Tell us more..." rows={4} style={{ background: 'var(--input-bg)', borderColor: 'var(--border)' }} />
                 </div>
-                <Button
-                  type="submit"
-                  disabled={submitting}
-                  className="w-full bg-[#D4AF37] text-black hover:bg-[#E5C568] rounded-full h-11 sm:h-12"
-                  data-testid="contact-submit-btn"
-                >
+                <Button type="submit" disabled={submitting} className="w-full bg-[#D4AF37] text-black hover:bg-[#E5C568] rounded-full h-12">
                   {submitting ? 'Sending...' : 'Send Message'}
                 </Button>
               </form>
@@ -644,70 +431,24 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Newsletter Section */}
-      <section className="py-16 sm:py-24 px-4 sm:px-6 bg-[#0A0A0A]">
+      {/* Newsletter */}
+      <section className="py-20 px-4 sm:px-6" style={{ background: 'var(--background-secondary)' }}>
         <div className="max-w-3xl mx-auto">
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.95 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            className="glass-gold rounded-2xl sm:rounded-3xl p-8 sm:p-12 md:p-16 text-center"
-          >
-            <h2 className="font-heading text-2xl sm:text-3xl md:text-4xl text-white font-light mb-4">
-              Get Travel Inspiration
-            </h2>
-            <p className="text-white/60 mb-6 sm:mb-8 font-body text-sm sm:text-base">
-              Subscribe to our newsletter for exclusive deals, travel tips, and destination guides.
-            </p>
+          <motion.div initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} className="glass-gold rounded-3xl p-12 text-center">
+            <h2 className="font-heading text-3xl mb-4" style={{ color: 'var(--foreground)' }}>Get Travel Inspiration</h2>
+            <p className="mb-8" style={{ color: 'var(--foreground-muted)' }}>Subscribe for exclusive deals, tips, and destination guides.</p>
             <form onSubmit={handleNewsletterSubmit} className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
-              <Input
-                type="email"
-                value={newsletterEmail}
-                onChange={(e) => setNewsletterEmail(e.target.value)}
-                placeholder="Enter your email"
-                className="flex-1 bg-white/10 border-white/20 text-white placeholder:text-white/40 h-11 sm:h-12"
-                data-testid="newsletter-email-input"
-              />
-              <Button 
-                type="submit"
-                className="bg-[#D4AF37] text-black hover:bg-[#E5C568] rounded-full px-6 sm:px-8 h-11 sm:h-12"
-                data-testid="newsletter-submit-btn"
-              >
-                <Send className="w-4 h-4 mr-2" />
-                Subscribe
+              <Input type="email" value={newsletterEmail} onChange={(e) => setNewsletterEmail(e.target.value)} placeholder="Enter your email" className="flex-1 h-12" style={{ background: 'var(--input-bg)', borderColor: 'var(--border)' }} />
+              <Button type="submit" className="bg-[#D4AF37] text-black hover:bg-[#E5C568] rounded-full px-8 h-12">
+                <Send className="w-4 h-4 mr-2" />Subscribe
               </Button>
             </form>
           </motion.div>
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-16 sm:py-24 px-4 sm:px-6">
-        <div className="max-w-4xl mx-auto text-center">
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-          >
-            <h2 className="font-heading text-3xl sm:text-4xl md:text-5xl text-white font-light mb-6">
-              Ready for Your Next Adventure?
-            </h2>
-            <p className="text-white/60 text-base sm:text-lg mb-8 font-body max-w-xl mx-auto">
-              Join thousands of travelers who've discovered the joy of AI-powered trip planning.
-            </p>
-            <Button 
-              onClick={() => navigate('/plan')}
-              className="bg-[#D4AF37] text-black hover:bg-[#E5C568] rounded-full px-8 sm:px-10 py-5 sm:py-6 text-base sm:text-lg font-medium"
-              data-testid="cta-start-btn"
-            >
-              Start Planning Free
-            </Button>
-          </motion.div>
-        </div>
-      </section>
-
       {/* Footer */}
-      <footer className="border-t border-white/5 py-8 sm:py-12 px-4 sm:px-6">
+      <footer className="py-12 px-4 sm:px-6 border-t" style={{ borderColor: 'var(--border)' }}>
         <div className="max-w-7xl mx-auto">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-8">
             <div className="col-span-2 md:col-span-1">
@@ -715,55 +456,42 @@ export default function LandingPage() {
                 <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#D4AF37] to-[#A38322] flex items-center justify-center">
                   <Plane className="w-4 h-4 text-black" />
                 </div>
-                <span className="font-heading text-xl text-white">Odyssey</span>
+                <span className="font-heading text-xl" style={{ color: 'var(--foreground)' }}>Odyssey</span>
               </div>
-              <p className="text-white/40 text-sm font-body">
-                The Art of Getting Lost, Curated by AI.
-              </p>
+              <p className="text-sm" style={{ color: 'var(--foreground-muted)' }}>AI-Powered Travel Planning</p>
+              <p className="text-xs mt-2" style={{ color: 'var(--foreground-muted)' }}>Founded by Ajay Reddy Gopu</p>
             </div>
             
             <div>
-              <h4 className="text-white font-body font-medium mb-4 text-sm">Product</h4>
+              <h4 className="font-body font-medium mb-4 text-sm" style={{ color: 'var(--foreground)' }}>Product</h4>
               <div className="space-y-2">
-                <Link to="/plan" className="block text-white/40 hover:text-[#D4AF37] text-sm">Plan Trip</Link>
-                <a href="#features" className="block text-white/40 hover:text-[#D4AF37] text-sm">Features</a>
-                <a href="#" className="block text-white/40 hover:text-[#D4AF37] text-sm">Pricing</a>
+                <Link to="/plan" className="block text-sm hover:text-[#D4AF37]" style={{ color: 'var(--foreground-muted)' }}>Plan Trip</Link>
+                <a href="#features" className="block text-sm hover:text-[#D4AF37]" style={{ color: 'var(--foreground-muted)' }}>Features</a>
               </div>
             </div>
             
             <div>
-              <h4 className="text-white font-body font-medium mb-4 text-sm">Company</h4>
+              <h4 className="font-body font-medium mb-4 text-sm" style={{ color: 'var(--foreground)' }}>Company</h4>
               <div className="space-y-2">
-                <a href="#about" className="block text-white/40 hover:text-[#D4AF37] text-sm">About Us</a>
-                <a href="#contact" className="block text-white/40 hover:text-[#D4AF37] text-sm">Contact</a>
-                <a href="#" className="block text-white/40 hover:text-[#D4AF37] text-sm">Careers</a>
+                <a href="#about" className="block text-sm hover:text-[#D4AF37]" style={{ color: 'var(--foreground-muted)' }}>About</a>
+                <a href="#contact" className="block text-sm hover:text-[#D4AF37]" style={{ color: 'var(--foreground-muted)' }}>Contact</a>
               </div>
             </div>
             
             <div>
-              <h4 className="text-white font-body font-medium mb-4 text-sm">Legal</h4>
+              <h4 className="font-body font-medium mb-4 text-sm" style={{ color: 'var(--foreground)' }}>Legal</h4>
               <div className="space-y-2">
-                <a href="#" className="block text-white/40 hover:text-[#D4AF37] text-sm">Privacy Policy</a>
-                <a href="#" className="block text-white/40 hover:text-[#D4AF37] text-sm">Terms of Service</a>
-                <a href="#" className="block text-white/40 hover:text-[#D4AF37] text-sm">Cookie Policy</a>
+                <a href="#" className="block text-sm hover:text-[#D4AF37]" style={{ color: 'var(--foreground-muted)' }}>Privacy Policy</a>
+                <a href="#" className="block text-sm hover:text-[#D4AF37]" style={{ color: 'var(--foreground-muted)' }}>Terms of Service</a>
               </div>
             </div>
           </div>
           
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-8 border-t border-white/5">
-            <p className="text-white/40 text-xs sm:text-sm font-body">
-              © 2025 Odyssey. All rights reserved.
-            </p>
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-8 border-t" style={{ borderColor: 'var(--border)' }}>
+            <p className="text-xs" style={{ color: 'var(--foreground-muted)' }}>© 2025 Odyssey. All rights reserved.</p>
             <div className="flex items-center gap-4">
               {socialLinks.slice(0, 4).map((social, i) => (
-                <a
-                  key={i}
-                  href={social.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-white/40 hover:text-[#D4AF37] transition-colors"
-                  aria-label={social.label}
-                >
+                <a key={i} href={social.href} target="_blank" rel="noopener noreferrer" className="hover:text-[#D4AF37]" style={{ color: 'var(--foreground-muted)' }}>
                   <social.icon className="w-4 h-4" />
                 </a>
               ))}
